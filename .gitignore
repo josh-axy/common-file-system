@@ -1,2 +1,10 @@
 .vs/
 mini-FSysten.VC.VC.opendb
+/mini-FSysten/x64/Debug/mini-FSysten.tlog
+/mini-FSysten/x64/Debug
+/mini-FSysten/mini-FSysten.vcxproj
+/mini-FSysten/mini-FSysten.vcxproj.filters
+/mini-FSysten/mini-FSysten.vcxproj.user
+ipch/
+x64/
+
