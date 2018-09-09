@@ -1,8 +1,2 @@
 .vs/
-/mini-FSysten/x64/Debug/mini-FSysten.tlog
-/mini-FSysten/x64/Debug
-ipch/
-x64/
-.vscode/
-Debug/
-mini-FSysten.VC.db
+mini-FSysten.VC.VC.opendb
