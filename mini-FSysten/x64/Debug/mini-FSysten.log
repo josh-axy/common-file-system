@@ -1,5 +1,0 @@
-﻿  mini-FSysten.cpp
-e:\vs文件\commonsystem2\mini-fsysten\mini-fsysten.cpp(151): warning C4244: “=”: 从“time_t”转换到“int”，可能丢失数据
-e:\vs文件\commonsystem2\mini-fsysten\mini-fsysten.cpp(152): warning C4244: “=”: 从“time_t”转换到“int”，可能丢失数据
-e:\vs文件\commonsystem2\mini-fsysten\mini-fsysten.cpp(207): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
-  mini-FSysten.vcxproj -> E:\VS文件\commonSystem2\x64\Debug\mini-FSysten.exe

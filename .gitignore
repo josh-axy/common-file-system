@@ -1,1 +1,5 @@
 .vs/
+Debug/
+x64/Debug
+mini-FSysten/Debug
+mini-FSysten/x64/Debug
