@@ -1,7 +1,0 @@
-﻿  mini-FSysten.cpp
-d:\work\project\commonsystem\mini-fsysten\mini-fsysten.cpp(149): warning C4244: “=”: 从“time_t”转换到“int”，可能丢失数据
-d:\work\project\commonsystem\mini-fsysten\mini-fsysten.cpp(150): warning C4244: “=”: 从“time_t”转换到“int”，可能丢失数据
-d:\work\project\commonsystem\mini-fsysten\mini-fsysten.cpp(204): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
-d:\work\project\commonsystem\mini-fsysten\mini-fsysten.cpp(157): warning C4715: “format”: 不是所有的控件路径都返回值
-d:\work\project\commonsystem\mini-fsysten\mini-fsysten.cpp(372): warning C4715: “mount”: 不是所有的控件路径都返回值
-  mini-FSysten.vcxproj -> D:\WORK\project\commonSystem\x64\Debug\mini-FSysten.exe
