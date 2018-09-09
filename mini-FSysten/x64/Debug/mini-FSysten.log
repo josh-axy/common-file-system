@@ -1,9 +1,5 @@
 ﻿  mini-FSysten.cpp
-e:\vs文件\commonsystem2\mini-fsysten\mini-fsysten.cpp(147): warning C4244: “=”: 从“time_t”转换到“int”，可能丢失数据
-e:\vs文件\commonsystem2\mini-fsysten\mini-fsysten.cpp(148): warning C4244: “=”: 从“time_t”转换到“int”，可能丢失数据
-e:\vs文件\commonsystem2\mini-fsysten\mini-fsysten.cpp(200): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
-e:\vs文件\commonsystem2\mini-fsysten\mini-fsysten.cpp(420): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“size_t”
-  e:\vs文件\commonsystem2\mini-fsysten\mini-fsysten.cpp(420): note: 请考虑在格式字符串中使用“%zd”
-e:\vs文件\commonsystem2\mini-fsysten\mini-fsysten.cpp(153): warning C4715: “format”: 不是所有的控件路径都返回值
-e:\vs文件\commonsystem2\mini-fsysten\mini-fsysten.cpp(368): warning C4715: “mount”: 不是所有的控件路径都返回值
+e:\vs文件\commonsystem2\mini-fsysten\mini-fsysten.cpp(151): warning C4244: “=”: 从“time_t”转换到“int”，可能丢失数据
+e:\vs文件\commonsystem2\mini-fsysten\mini-fsysten.cpp(152): warning C4244: “=”: 从“time_t”转换到“int”，可能丢失数据
+e:\vs文件\commonsystem2\mini-fsysten\mini-fsysten.cpp(207): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
   mini-FSysten.vcxproj -> E:\VS文件\commonSystem2\x64\Debug\mini-FSysten.exe
