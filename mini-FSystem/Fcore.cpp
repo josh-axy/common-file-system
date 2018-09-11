@@ -1,9 +1,5 @@
 #include "pch.h"
-#include "Fbase.h"
-#include "Ftools.h"
 #include "Fcore.h"
-
-using namespace std;
 
 /*¥¥Ω®fcbœÓ*/
 int new_fcb(int dir_fcb_id, char fcb_type, char *name, FILE* fp_tmp)

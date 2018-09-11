@@ -61,6 +61,8 @@ extern FCB fcb_list[FCB_NUM];
 extern IB ib_tmp[2];
 /*全局变量*/
 
+using namespace std;
+
 #endif // !F_BASE_H
 
 

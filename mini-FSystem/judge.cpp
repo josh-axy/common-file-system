@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "Fcommand.h"
 
 /*Judge users' order*/
 void judge(char *op1, char *op2, char *op3)

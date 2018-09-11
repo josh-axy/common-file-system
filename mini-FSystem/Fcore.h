@@ -1,6 +1,8 @@
 #pragma once
 #ifndef F_CORE_H
 #define F_CORE_H
+#include "Fbase.h"
+#include "Ftools.h"
 /*内核函数定义*/
 int cp_s2c(char path1[], char path2[]);
 int cp_c2s(char path1[], char path2[]);
