@@ -106,7 +106,7 @@ int update_fcb(int dir_fcb_id, int fcb_id, char *name, FILE* fp_tmp)
 		cout << "Update fcb failed." << endl;
 		return -2;
 	}
-	/*查重名并寻找新路径*/
+	/*查重名并寻找新filep位置*/
 	for (child = 2; fcb_list[tmp_fcb_id].filep[child] != -1; child++)
 	{
 		if (child == EXT_CB)
@@ -141,8 +141,9 @@ int update_fcb(int dir_fcb_id, int fcb_id, char *name, FILE* fp_tmp)
 				origin_fcb_id = fcb_list[origin_fcb_id].filep[origin_child];
 				origin_child = 1;
 			}
-			if (strcmp(name, fcb_list[fcb_list[origin_fcb_id].filep[origin_child]].filename) == 0)
+			if (fcb_list[origin_fcb_id].filep[origin_child] == fcb_id)
 			{
+				//向前移动filep
 				for (drop = origin_child; fcb_list[origin_fcb_id].filep[drop] != -1; drop++)
 				{
 					if (drop == EXT_CB)
@@ -162,14 +163,24 @@ int update_fcb(int dir_fcb_id, int fcb_id, char *name, FILE* fp_tmp)
 				}
 				if (drop == 1)
 				{
+					//断开extCB链接
 					fcb_list[fcb_list[origin_fcb_id].filep[0]].filep[EXT_CB] = -1;
-					fseek(fp, FCB_POS(tmp_fcb_id), SEEK_SET);
-					fwrite(&fcb_list[tmp_fcb_id], sizeof(FCB), 1, fp);
+					fseek(fp, FCB_POS(fcb_list[origin_fcb_id].filep[0]), SEEK_SET);
+					fwrite(&fcb_list[fcb_list[origin_fcb_id].filep[0]], sizeof(FCB), 1, fp);
 					fflush(fp);
+					//释放extCB
+					fcb_list[origin_fcb_id].filep[0] = sys.freefcb_id;
+					fseek(fp, FCB_POS(origin_fcb_id), SEEK_SET);
+					fwrite(&fcb_list[origin_fcb_id], sizeof(FCB), 1, fp);
+					fflush(fp);
+					sys.freefcb_id = origin_fcb_id;
+					update_sys();
 				}
 				else
 				{
-
+					fseek(fp, FCB_POS(origin_fcb_id), SEEK_SET);
+					fwrite(&fcb_list[origin_fcb_id], sizeof(FCB), 1, fp);
+					fflush(fp);
 				}
 				break;
 			}

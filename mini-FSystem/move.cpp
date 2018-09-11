@@ -19,10 +19,6 @@ void move(char *src, char *dst)
 	{
 		if (dst[i] == '\\')
 		{
-			if (i == strlen(dst) - 1)
-			{
-				cout << "Path ending incorrect. Please re-enter" << endl;
-			}
 			if (i != 0)
 				dst[i] = '\0';
 			break;
@@ -38,7 +34,6 @@ void move(char *src, char *dst)
 		strcpy(name, dst + i + 1);
 		dst_fcb_id = path_to_fcb_id(dst);
 	}
-	dst_fcb_id = path_to_fcb_id(dst);
 	switch (dst_fcb_id)
 	{
 	case -2:

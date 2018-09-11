@@ -29,6 +29,7 @@ int format() {
 	block.freeib_id = 0;
 	block.last_write_time = current_time();
 	fwrite(&block, sizeof(superBlock), 1, fp);
+	fflush(fp);
 
 	//空文件头初始化
 	IB ib;
@@ -38,6 +39,7 @@ int format() {
 	ib.last_num = -1;		//-1表示此为空文件信息块头
 	ib.next_num = -1;		//-1表示此为最后一段空文件信息段
 	fwrite(&ib, sizeof(IB), 1, fp);
+	fflush(fp);
 
 	//控制块初始化
 	FCB fcb;
@@ -56,7 +58,7 @@ int format() {
 		fcb.filep[0] = i + 1;
 		fwrite(&fcb, sizeof(FCB), 1, fp);
 	}
-
+	fflush(fp);
 	//根目录初始化
 	FCB root;
 	fseek(fp, FCB_Location * BLOCK_SIZE, SEEK_SET);
@@ -71,6 +73,7 @@ int format() {
 		root.filep[i] = -1;					//暂时不存在子目录
 	root.filep[1] = 0;
 	fwrite(&root, sizeof(FCB), 1, fp);
+	fflush(fp);
 	printf("\nFormat success.\n");
 	if ((fp = fopen(mini_path, "rb+")) == NULL)
 	{
