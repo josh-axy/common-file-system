@@ -9,7 +9,7 @@ int cp_c2s(char path1[], char path2[]);
 int cp_c2c(char path1[], char path2[]);
 int new_fcb(int dir_fcb_id, char fcb_type, char *name, FILE* fp_tmp);
 int update_fcb(int dir_fcb_id, int fcb_id, char *name, FILE* fp_tmp);
-int drop_fcb(int dir_fcb_id, int fcb_id);
+int drop_fcb(int fcb_id);
 int write_ib(int ib_id, int block_size);
 void update_sys();
 /*内核函数定义*/
