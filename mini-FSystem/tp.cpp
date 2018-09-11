@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Fcommand.h"
 
-void more(char *)
+void readtxt(char *)
 {
 
 }
