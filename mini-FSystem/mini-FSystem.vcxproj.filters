@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Fcommand.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Ftools.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Fcore.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Fbase.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="create.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="mount.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="format.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="help.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="cd.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ls.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="cp.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="input.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="del.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="move.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="mkdir.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="judge.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tp.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="more.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="attr.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="mini-FSystem.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="attr.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="cd.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="cp.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="create.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="del.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="format.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="help.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="input.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="judge.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ls.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="mkdir.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="more.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="mount.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="move.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Fbase.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Ftools.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Fcore.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tp.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
