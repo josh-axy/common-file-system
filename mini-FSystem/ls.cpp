@@ -4,7 +4,7 @@
 /*Show the contents for users*/
 void ls(char* path)
 {
-	int tmp_fcb_id = path_to_fcb_id(path);
+	int tmp_fcb_id = path_to_fcb_id(path, DIR_T);
 	if (tmp_fcb_id == -1)
 	{
 		return;

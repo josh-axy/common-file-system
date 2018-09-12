@@ -33,6 +33,6 @@ void create(char *name)
 	//判断文件是否被创建
 	if ((fp = fopen(mini_path, "r+")) != NULL)
 		printf("\nCreate file success.\n");
-	fflush(fp);
+	fclose(fp);
 	format();
 }

@@ -21,9 +21,6 @@
     <ClInclude Include="Fcommand.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Ftools.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Fcore.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -128,13 +125,16 @@
     <ClCompile Include="Fbase.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Ftools.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="Fcore.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="tp.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tree.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="exit.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

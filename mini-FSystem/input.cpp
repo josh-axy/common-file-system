@@ -4,26 +4,26 @@
 /*Input orders!!!*/
 int input(char* op1, char* op2, char* op3)
 {
-	char op[OP_LEN + 1];
+	char op[OP_LEN * 3 + 1];
 	int flag[100];
 	int i = 0, j = 0;
-	int flag1 = 0;
+	int overflow = 0;
 	memset(flag, 0, sizeof(flag));
 	for (i = 0;; i++)
 	{
-		if (i == OP_LEN)
+		if (i == OP_LEN *3)
 		{
-			if (flag1 == 0)
+			if (overflow == 0)
 			{
-				printf("The input command character is too long. Please enter the command within %d.\n.", i);
-				flag1 = 1;
+				printf("The input command character is too long. Please enter the command within %d.\n.", OP_LEN);
+				overflow = 1;
 			}
 			i = 0;
 		}
 		op[i] = getchar();
 		if (op[i] == '\n')
 		{
-			if (flag1 == 1)
+			if (overflow == 1)
 				return -1;
 			op[i] = '\0';
 			break;
@@ -35,6 +35,11 @@ int input(char* op1, char* op2, char* op3)
 	{
 		if ((op[i] == ' '&&op[i + 1] != ' ') || (op[i] != ' ' && (op[i + 1] == ' ' || op[i + 1] == '\0')))
 			flag[j++] = i + 1;
+	}
+	if (flag[1] - flag[0] > OP_LEN || flag[3] - flag[2] > OP_LEN || flag[5] - flag[4] > OP_LEN)
+	{
+		printf("The input command character is too long. Please enter the command within %d.\n.", OP_LEN);
+		return -1;
 	}
 	for (i = flag[0]; i < flag[1]; i++)
 		op1[i - flag[0]] = op[i];

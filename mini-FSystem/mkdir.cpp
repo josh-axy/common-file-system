@@ -34,7 +34,7 @@ int mkdir(char* path, int mk_type)
 	else
 	{
 		strcpy(name, path + i + 1);
-		tmp_fcb_id = path_to_fcb_id(path);
+		tmp_fcb_id = path_to_fcb_id(path, DIR_T);
 	}
 	switch (tmp_fcb_id)
 	{

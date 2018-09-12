@@ -79,14 +79,12 @@ void judge(char *op1, char *op2, char *op3)
 	}
 
 	//Delete Command
-	else if (strcmp(op1, "dl") == 0)
+	else if (strcmp(op1, "del") == 0)
 	{
 		if (op2[0] == '\0')
 			printf("Command syntax is incorrect!\n");
-		else if (strlen(op3) != 0)
-			printf("Command syntax is incorrect!\n");
 		else
-			del(op2);  //1
+			del(op2, op3);  //1
 	}
 
 	//Show Text Command
@@ -135,7 +133,7 @@ void judge(char *op1, char *op2, char *op3)
 	}
 
 	//Create File Command
-	else if (strcmp(op1, "mkfile") == 0)
+	else if (strcmp(op1, "mkf") == 0)
 	{
 		if (op2[0] == '\0')
 			printf("Command syntax is incorrect!\n");
@@ -152,6 +150,17 @@ void judge(char *op1, char *op2, char *op3)
 			printf("Command syntax is incorrect!\n");
 		else
 			move(op2, op3);   //1
+	}
+
+	//Close Command
+	else if (strcmp(op1, "exit") == 0)
+	{
+	if (op2[0] != '\0')
+		printf("Command syntax is incorrect!\n");
+	else if (op3[0] != '\0')
+		printf("Command syntax is incorrect!\n");
+	else
+		exit();   //1
 	}
 
 	else

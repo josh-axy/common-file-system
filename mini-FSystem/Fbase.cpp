@@ -7,4 +7,5 @@ int current_fcb_id;
 int sys_mounted = 0;
 superBlock sys;
 FCB fcb_list[FCB_NUM];
-IB ib_tmp[2];
+FreeIB ib_tmp[2];
+char current_path[128] = { '\0' };

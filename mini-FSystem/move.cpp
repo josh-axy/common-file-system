@@ -11,7 +11,7 @@ void move(char *src, char *dst)
 		cout << "Please input a valid destination!" << endl;
 		return;
 	}
-	src_fcb_id = path_to_fcb_id(src);
+	src_fcb_id = path_to_fcb_id(src, EMPTY_T);
 	switch (src_fcb_id)
 	{
 	case -2:
@@ -26,7 +26,7 @@ void move(char *src, char *dst)
 		{
 			if (i != 0)
 				dst[i] = '\0';
-			if (i == strlen(dst))
+			if (dst[i + 1] == '\0')
 			{
 				strcpy(name, fcb_list[src_fcb_id].filename);
 			}
@@ -43,7 +43,7 @@ void move(char *src, char *dst)
 	{
 		if (name[0] == '\0')
 			strcpy(name, dst + i + 1);
-		dst_fcb_id = path_to_fcb_id(dst);
+		dst_fcb_id = path_to_fcb_id(dst, DIR_T);
 	}
 	switch (dst_fcb_id)
 	{
@@ -51,7 +51,16 @@ void move(char *src, char *dst)
 	case -1:
 		return;
 	default:
-		update_fcb(dst_fcb_id, src_fcb_id, name, NULL);
+		for (int tmp_fcb_id = dst_fcb_id; tmp_fcb_id!=-1;)
+		{
+			tmp_fcb_id = fcb_list[tmp_fcb_id].filep[0];
+			if (tmp_fcb_id == src_fcb_id)
+			{
+				cout << "Cannot do that operate!" << endl;
+				return;
+			}
+		}
+		move_fcb(dst_fcb_id, src_fcb_id, name, NULL);
 		break;
 	}
 	return;

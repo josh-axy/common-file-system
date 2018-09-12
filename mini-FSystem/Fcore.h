@@ -2,15 +2,20 @@
 #ifndef F_CORE_H
 #define F_CORE_H
 #include "Fbase.h"
-#include "Ftools.h"
 /*内核函数定义*/
+int current_time();
+int path_to_fcb_id(char *path, int f_type);
 int cp_s2c(char path1[], char path2[]);
 int cp_c2s(char path1[], char path2[]);
 int cp_c2c(char path1[], char path2[]);
-int new_fcb(int dir_fcb_id, char fcb_type, char *name, FILE* fp_tmp);
-int update_fcb(int dir_fcb_id, int fcb_id, char *name, FILE* fp_tmp);
-int drop_fcb(int fcb_id);
-int write_ib(int ib_id, int block_size);
+int new_fcb(int dir_fcb_id, char fcb_type, char *name, char* file_path);
+int move_fcb(int dir_fcb_id, int fcb_id, char *name, char* file_path);
+int drop_fcb(int fcb_id, int r_mode);
+void update_fcb(int fcb_id);
+int get_free_ib(int ib_size);
+int write_ib(int ib_id, int ib_size, FILE* fp_tmp);
+int move_ib(int src_ib_id, int dst_ib_id);
+int erase_ib(int ib_id, int ib_size);
 void update_sys();
 /*内核函数定义*/
 #endif // !F_CORE_H

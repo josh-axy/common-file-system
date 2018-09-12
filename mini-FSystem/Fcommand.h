@@ -1,14 +1,13 @@
 #pragma once
 /*指令函数定义*/
 #include "Fbase.h"
-#include "Ftools.h"
 #include "Fcore.h"
 int format();
 int mount(char arr[]);
 int input(char* op1, char* op2, char* op3);
 void attr(char *);
 void cp(char path1[], char path2[]);
-void del(char* path);
+void del(char* path, char* mode);
 void cd(char* path);
 void ls(char* path);
 void create(char *name);
@@ -18,5 +17,8 @@ int mkdir(char* path, int mk_type);
 void help(char * order);
 void readtxt(char *);
 void more(char *);
+void tree(char *path);
+void exit();
+
 using namespace std;
 /*指令函数定义*/

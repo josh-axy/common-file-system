@@ -24,9 +24,11 @@ int mount(char arr[])
 	}
 	//装载空闲信息块头
 	fseek(fp, IB_Location * BLOCK_SIZE + sys.freeib_id * BLOCK_SIZE, 0);
-	fread(&ib_tmp, sizeof(IB), 1, fp);
+	fread(&ib_tmp, sizeof(FreeIB), 1, fp);
 	current_fcb_id = sys.rootfcb_id;
+	strcpy(current_path, "\\");
 	printf("Mount success.\n");
 	sys_mounted = 1;
+	fclose(fp);
 	return 0;
 }
