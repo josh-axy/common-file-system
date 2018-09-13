@@ -26,9 +26,6 @@ void ls(char* path, char* mode)
 		if (fcb_list[child_id].file_type == DIR_T)
 		{
 			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
-		}
-		if (fcb_list[child_id].file_type == DIR_T)
-		{
 			cout << '/';
 		}
 		cout << endl;

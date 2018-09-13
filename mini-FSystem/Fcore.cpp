@@ -27,26 +27,11 @@ void print_time(int timestamp)
 	ntime = (int)ftime;
 	tm* pTime = gmtime(&ftime);
 	strftime(sTime, 80, "%Y-%m-%d %H:%M:%S", pTime);//方法1
-	cout << sTime << endl;
-	return;
-}
-/************************************************************************************/
-
-
-/***************************************打印时间函数*********************************/
-/************************************************************************************/
-void print_time(int timestamp)
-{		                                         //nowtime:当前系统时间,last_write_time[15]:最后写入时间，用来接收当前系统时间
-	int ntime;
-	char sTime[20] = { 0 };						//该函数必须包含<time.h><string.h>头文件
-	time_t ftime = timestamp + (8 * 3600);
-	ntime = (int)ftime;
-	tm* pTime = gmtime(&ftime);
-	strftime(sTime, 80, "%Y-%m-%d %H:%M:%S", pTime);//方法1
 	cout << sTime;
 	return;
 }
 /************************************************************************************/
+
 /*路径 -> fcb编号*/
 int path_to_fcb_id(char *path, int f_type)
 {
