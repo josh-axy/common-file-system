@@ -155,7 +155,7 @@ int new_fcb(int dir_fcb_id, int fcb_type, char *name, char *src_f_path)
 	int tmp_fcb_id = dir_fcb_id;
 	int f_fcb_id;
 	int f_len;
-	IB_Disk* file_info;
+	IB_Disk* file_info = NULL;
 	FILE* fp_tmp;
 	if (fp == NULL)
 	{
@@ -165,8 +165,6 @@ int new_fcb(int dir_fcb_id, int fcb_type, char *name, char *src_f_path)
 	//分配IB
 	if (fcb_type == FILE_T)
 	{
-		fcb_list[tmp_fcb_id].file_type = FILE_T;
-		write_fcb(tmp_fcb_id);
 		if (src_f_path)
 		{
 			//获取文件字节数
@@ -235,7 +233,7 @@ int new_fcb(int dir_fcb_id, int fcb_type, char *name, char *src_f_path)
 	sys.freefcb_id = fcb_list[free_id].filep[0];
 	sys.last_write_fcb = free_id;
 	/*初始化空白FCB*/
-	fcb_list[free_id].file_type = DIR_T;
+	fcb_list[free_id].file_type = fcb_type;
 	fcb_list[free_id].create_time = current_time();
 	fcb_list[free_id].filep[0] = tmp_fcb_id;
 	fcb_list[free_id].filep[1] = free_id;
@@ -255,7 +253,7 @@ int new_fcb(int dir_fcb_id, int fcb_type, char *name, char *src_f_path)
 		sys.freefcb_id = fcb_list[free_id].filep[0];
 		sys.last_write_fcb = free_id;
 		//初始化空白FCB
-		fcb_list[free_id].file_type = DIR_T;
+		fcb_list[free_id].file_type = fcb_type;
 		fcb_list[free_id].create_time = current_time();
 		fcb_list[free_id].filep[0] = tmp_fcb_id;
 		fcb_list[free_id].filep[1] = free_id;
@@ -570,7 +568,7 @@ IB_Disk* write_ib(int f_size, FILE* fp_tmp)
 	}
 	//将字节数转化为块数
 	blk_size = (f_size + sizeof(IB_Disk)) / BLOCK_SIZE + ((f_size + sizeof(IB_Disk)) % BLOCK_SIZE) % 2;
-
+	rest_size = 0;
 	/*检查IB空间*/
 	p_free_ib = get_free_ib(blk_size);
 	while (p_free_ib == NULL)

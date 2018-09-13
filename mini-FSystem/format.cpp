@@ -97,6 +97,7 @@ int format() {
 		//装载空闲信息块头
 		fseek(fp, IB_POS(sys.freeib_id), 0);
 		fread(&free_ib_tmp, sizeof(IB_Disk), 1, fp);
+		free_ib_tree.Clear();
 		free_ib_tree.Insert(free_ib_tmp);
 		//建立空闲块平衡二叉树
 		for (int i = 0; free_ib_tmp.next_free_ib != -1; i++)

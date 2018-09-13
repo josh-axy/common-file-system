@@ -194,7 +194,7 @@ IB_AVLNode* IB_AVLTree::Search(const int id, const int size)
 		}
 		if (size <= p_node->size_ && id == -1)
 		{
-			if (p_node->p_lchild_ && p_node->p_lchild_->size_ < size)
+			if (p_node->p_lchild_ == NULL || p_node->p_lchild_->size_ < size)
 			{
 				best_node = p_node;
 			}
