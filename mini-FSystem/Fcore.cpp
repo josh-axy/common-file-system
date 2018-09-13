@@ -147,30 +147,83 @@ int path_to_fcb_id(char *path, int f_type)
 	return fcb_id;
 }
 
-/*创建fcb项并更新IB*/
+/*创建fcb项并写入IB*/
 int new_fcb(int dir_fcb_id, int fcb_type, char *name, char *src_f_path)
 {
 	int free_id;
 	int child;
-	int fcb_id_tmp = dir_fcb_id;
-	int file_size;
+	int tmp_fcb_id = dir_fcb_id;
+	int f_fcb_id;
+	int f_len;
 	IB_Disk* file_info;
-	IB_AVLNode* p_free_ib;
 	FILE* fp_tmp;
 	if (fp == NULL)
 	{
 		cout << "New fcb failed." << endl;
 		return -2;
 	}
+	//分配IB
+	if (fcb_type == FILE_T)
+	{
+		fcb_list[tmp_fcb_id].file_type = FILE_T;
+		write_fcb(tmp_fcb_id);
+		if (src_f_path)
+		{
+			//获取文件字节数
+			if (src_f_path[1] == ':' && src_f_path[2] == '\\')
+			{
+				if (src_f_path[3] == '\\')
+				{
+					cout << "Path format error." << endl;
+					return -4;
+				}
+				if ((fp_tmp = fopen(src_f_path, "rb+")) == NULL)
+				{
+					cout << "File doesn't exist." << endl;
+					return -4;
+				}
+				fseek(fp_tmp, 0, SEEK_END);
+				f_len = ftell(fp);
+				fseek(fp_tmp, 0, SEEK_SET);
+			}
+			else
+			{
+				f_fcb_id = path_to_fcb_id(src_f_path, FILE_T);
+				switch (f_fcb_id)
+				{
+				case -2:
+				case -1:
+					cout << "File doesn't exist." << endl;
+					return -4;
+				default:
+					f_len = fcb_list[f_fcb_id].file_size;
+					break;
+				}
+				if ((fp_tmp = fopen(fs_path, "rb+")) == NULL)
+				{
+					cout << "File doesn't exist." << endl;
+					return -4;
+				}
+				fseek(fp_tmp, IB_POS(fcb_list[f_fcb_id].file_block_id), SEEK_SET);
+			}
+			file_info = write_ib(f_len, fp_tmp);
+		}
+		else
+		{
+			f_len = BLOCK_SIZE - sizeof(IB_Disk);
+			fp_tmp = NULL;
+			file_info = write_ib(f_len, NULL);
+		}
+	}
 	/*查重名*/
-	for (child = 2; fcb_list[fcb_id_tmp].filep[child] != -1; child++)
+	for (child = 2; fcb_list[tmp_fcb_id].filep[child] != -1; child++)
 	{
 		if (child == EXT_CB)
 		{
-			fcb_id_tmp = fcb_list[fcb_id_tmp].filep[EXT_CB];
+			tmp_fcb_id = fcb_list[tmp_fcb_id].filep[EXT_CB];
 			child = 1;
 		}
-		if (strcmp(name, fcb_list[fcb_list[fcb_id_tmp].filep[child]].filename) == 0)
+		if (strcmp(name, fcb_list[fcb_list[tmp_fcb_id].filep[child]].filename) == 0)
 		{
 			cout << "Name duplicated. Please re-enter." << endl;
 			return -1;
@@ -178,83 +231,49 @@ int new_fcb(int dir_fcb_id, int fcb_type, char *name, char *src_f_path)
 	}
 	/*分配空白FCB*/
 	free_id = sys.freefcb_id;
-	fcb_list[fcb_id_tmp].filep[child] = free_id;
+	fcb_list[tmp_fcb_id].filep[child] = free_id;
 	sys.freefcb_id = fcb_list[free_id].filep[0];
 	sys.last_write_fcb = free_id;
 	/*初始化空白FCB*/
 	fcb_list[free_id].file_type = DIR_T;
 	fcb_list[free_id].create_time = current_time();
-	fcb_list[free_id].filep[0] = fcb_id_tmp;
+	fcb_list[free_id].filep[0] = tmp_fcb_id;
 	fcb_list[free_id].filep[1] = free_id;
 	/*写硬盘*/
 	write_fcb(free_id);
-	write_fcb(fcb_id_tmp);
+	write_fcb(tmp_fcb_id);
 	write_sys();
 	/*转到空白FCB*/
-	fcb_id_tmp = free_id;
+	tmp_fcb_id = free_id;
 	if (child == EXT_CB)
 	{
 		//变更块类型
-		fcb_list[fcb_id_tmp].file_type = EXT_T;
+		fcb_list[tmp_fcb_id].file_type = EXT_T;
 		//分配空白FCB
 		free_id = sys.freefcb_id;
-		fcb_list[fcb_id_tmp].filep[1] = free_id;//扩展块从下标1开始链接
+		fcb_list[tmp_fcb_id].filep[1] = free_id;//扩展块从下标1开始链接
 		sys.freefcb_id = fcb_list[free_id].filep[0];
 		sys.last_write_fcb = free_id;
 		//初始化空白FCB
 		fcb_list[free_id].file_type = DIR_T;
 		fcb_list[free_id].create_time = current_time();
-		fcb_list[free_id].filep[0] = fcb_id_tmp;
+		fcb_list[free_id].filep[0] = tmp_fcb_id;
 		fcb_list[free_id].filep[1] = free_id;
-		strcpy(fcb_list[free_id].filename, name);
 		/*写硬盘*/
-		write_fcb(free_id);
-		write_fcb(fcb_id_tmp);
+		write_fcb(tmp_fcb_id);
 		write_sys();
 		/*转到空白FCB*/
-		fcb_id_tmp = free_id;
+		tmp_fcb_id = free_id;
 	}
-	else
+	if (file_info != NULL)
 	{
-		strcpy(fcb_list[fcb_id_tmp].filename, name);
-		write_fcb(fcb_id_tmp);
+		fcb_list[tmp_fcb_id].file_block_id = file_info->block_id;
+		fcb_list[tmp_fcb_id].file_size = 1 * BLOCK_SIZE;
+		sys.last_write_ib = file_info->block_id;
+		write_sys();
 	}
-	//分配IB
-	if (fcb_type == FILE_T)
-	{
-		fcb_list[fcb_id_tmp].file_type = FILE_T;
-		if (src_f_path)
-		{
-			if (src_f_path)
-			{
-
-			}
-			while (true)
-			{
-				/*检查IB空间*/
-				p_free_ib = get_free_ib(1);
-				if (p_free_ib == NULL)
-				{
-					cout << "Disk full. Delete something to create." << endl;
-					return -3;
-				}
-				else
-				{
-					break;
-				}
-			}
-		}
-		
-		file_info = write_ib(BLOCK_SIZE, NULL);
-		if (file_info != NULL)
-		{
-			fcb_list[fcb_id_tmp].file_block_id = file_info->block_id;
-			fcb_list[fcb_id_tmp].file_size = 1 * BLOCK_SIZE - sizeof(IB_Disk);
-			sys.last_write_ib = file_info->block_id;
-			write_sys();
-		}
-		write_fcb(fcb_id_tmp);
-	}
+	strcpy(fcb_list[tmp_fcb_id].filename, name);
+	write_fcb(tmp_fcb_id);
 	fflush(fp);
 	return 0;
 }
@@ -539,6 +558,7 @@ IB_Disk* write_ib(int f_size, FILE* fp_tmp)
 	int ib_id;
 	char *buffer;
 	int blk_size;
+	int rest_size;
 	IB_Disk* ib_info = new IB_Disk;
 	IB_AVLNode *p_free_ib = new IB_AVLNode;
 	IB_AVLNode *p_new_ib;
@@ -548,19 +568,24 @@ IB_Disk* write_ib(int f_size, FILE* fp_tmp)
 		printf("Write IB failed.\n");
 		return NULL;
 	}
+	//将字节数转化为块数
+	blk_size = (f_size + sizeof(IB_Disk)) / BLOCK_SIZE + ((f_size + sizeof(IB_Disk)) % BLOCK_SIZE) % 2;
+
 	/*检查IB空间*/
-	p_free_ib = get_free_ib(1);
-	if (p_free_ib == NULL)
+	p_free_ib = get_free_ib(blk_size);
+	while (p_free_ib == NULL)
 	{
-		cout << "Disk full. Delete something to create." << endl;
-		return NULL;
+		blk_size--;
+		rest_size++;
+		p_free_ib = get_free_ib(blk_size);
+		if (blk_size == 0 || rest_size > blk_size)
+		{
+			cout << "Disk full. Delete something to create." << endl;
+			return NULL;
+		}
 	}
-	/*计算占用块数*/
-	blk_size = (f_size + sizeof(IB_Disk)) / BLOCK_SIZE;
-	if ((f_size + sizeof(IB_Disk)) % BLOCK_SIZE != 0)
-	{
-		blk_size++;
-	}
+
+	/*开始写*/
 	ib_id = p_free_ib->GetId();
 	ib_info->block_id = ib_id;
 	ib_info->size = blk_size;
@@ -599,7 +624,8 @@ int drop_ib(int ib_id)
 /*更新IB树与磁盘*/
 void update_ib(IB_AVLNode* old_ib, IB_AVLNode* new_ib)
 {
-
+	free_ib_tree.Delete(old_ib);
+	free_ib_tree.Insert(new_ib);
 }
 
 /*更新系统块*/
