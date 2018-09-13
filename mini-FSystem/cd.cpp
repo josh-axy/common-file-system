@@ -10,6 +10,8 @@ void cd(char* path)
 	if (path[0] == '\0')
 	{
 		tmp_fcb_id = sys.rootfcb_id;
+		current_fcb_id = tmp_fcb_id;
+		return;
 	}
 	switch (tmp_fcb_id)
 	{
@@ -22,14 +24,18 @@ void cd(char* path)
 		{
 			strcpy(path_list[depth], fcb_list[tmp_fcb_id].filename);
 			tmp_fcb_id = fcb_list[tmp_fcb_id].filep[0];
+			if (fcb_list[tmp_fcb_id].file_type == EXT_T)
+			{
+				tmp_fcb_id = fcb_list[tmp_fcb_id].filep[0];
+			}
 		}
-		strcpy(current_path, "\\");
+		strcpy(current_path, "/");
 		for (int i = depth-1; i >= 0; i--)
 		{
 			strcat(current_path, path_list[i]);
 			if (i)
 			{
-				strcat(current_path, "\\");
+				strcat(current_path, "/");
 			}
 		}
 		break;

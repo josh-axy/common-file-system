@@ -3,12 +3,12 @@
 /*Format 1G space*/
 int format() {
 	superBlock block;
-	if (strcmp(mini_path, "D:\\") == 0)
+	if (strcmp(fs_path, "D:\\") == 0)
 	{
 		printf("Please create a mini_FS first!\n");
 		return -1;
 	}
-	if ((fp = fopen(mini_path, "rb+")) == NULL)
+	if ((fp = fopen(fs_path, "rb+")) == NULL)
 	{
 		printf("Format failed.\n");
 		return -1;
@@ -34,15 +34,13 @@ int format() {
 	fflush(fp);
 
 	//空文件头初始化
-	FreeIB ib;
+	IB_Disk ib;
 	fseek(fp, IB_Location * BLOCK_SIZE, SEEK_SET);
 	ib.block_id = 4033;
-	ib.length = IB_NUM;
-	ib.last_block = -1;		//-1表示此为空文件信息块头
-	ib.next_block = -1;		//-1表示此为最后一段空文件信息段
-	ib.left = -1;			//无左子树
-	ib.right = -1;			//无右子树
-	fwrite(&ib, sizeof(FreeIB), 1, fp);
+	ib.size = IB_NUM;
+	ib.last_free_ib = -1;		//-1表示此为空文件信息块头
+	ib.next_free_ib = -1;		//-1表示此为最后一段空文件信息段
+	fwrite(&ib, sizeof(IB_Disk), 1, fp);
 	fflush(fp);
 
 	//控制块初始化
@@ -68,7 +66,7 @@ int format() {
 	//根目录初始化
 	FCB root;
 	fseek(fp, FCB_Location * BLOCK_SIZE, SEEK_SET);
-	strcpy(root.filename, "\\");			//根目录文件名
+	strcpy(root.filename, "/");			//根目录文件名
 	root.create_time = current_time();		//创建时间
 	root.edit_time = root.create_time;		//编辑时间
 	root.file_type = DIR_T;					//文件夹
@@ -80,35 +78,36 @@ int format() {
 	fwrite(&root, sizeof(FCB), 1, fp);
 	fflush(fp);
 	printf("\nFormat success.\n");
-	if ((fp = fopen(mini_path, "rb+")) == NULL)
+	if (fp == NULL)
 	{
 		printf("Mount failed.\n");
 		return -1;
 	}
-	//装载系统块
-	fseek(fp, SUPER_Loacation * BLOCK_SIZE, SEEK_SET);
-	fread(&sys, sizeof(superBlock), 1, fp);
-	//装载控制单元
-	fseek(fp, FCB_Location * BLOCK_SIZE, SEEK_SET);
-	for (int i = 0; i < FCB_NUM; i++)
+	if (sys_mounted == 1)
 	{
-		fread(&fcb_list[i], sizeof(FCB), 1, fp);
+		//装载系统块
+		fseek(fp, SUPER_Loacation * BLOCK_SIZE, SEEK_SET);
+		fread(&sys, sizeof(superBlock), 1, fp);
+		//装载控制单元
+		fseek(fp, FCB_Location * BLOCK_SIZE, SEEK_SET);
+		for (int i = 0; i < FCB_NUM; i++)
+		{
+			fread(&fcb_list[i], sizeof(FCB), 1, fp);
+		}
+		//装载空闲信息块头
+		fseek(fp, IB_POS(sys.freeib_id), 0);
+		fread(&free_ib_tmp, sizeof(IB_Disk), 1, fp);
+		free_ib_tree.Insert(free_ib_tmp);
+		//建立空闲块平衡二叉树
+		for (int i = 0; free_ib_tmp.next_free_ib != -1; i++)
+		{
+			fseek(fp, IB_POS(free_ib_tmp.next_free_ib), 0);
+			fread(&free_ib_tmp, sizeof(IB_Disk), 1, fp);
+			free_ib_tree.Insert(free_ib_tmp);
+		}
+		current_fcb_id = sys.rootfcb_id;
+		strcpy(current_path, "/");
 	}
-	//装载空闲信息块头
-	fseek(fp, IB_Location * BLOCK_SIZE + sys.freeib_id * BLOCK_SIZE, 0);
-	fread(&ib_tmp, sizeof(FreeIB), 1, fp);
-	current_fcb_id = sys.rootfcb_id;
-	strcpy(current_path, "\\");
-	/*
-	FCB rootd;
-	fseek(fp, FCB_Location * BLOCK_SIZE, SEEK_SET);
-	fread(&rootd, sizeof(FCB), 1, fp);
-	fseek(fp, FCB_Location * BLOCK_SIZE, SEEK_SET);
-	for (int i = 0; i < FCB_NUM; i++)
-	{
-		fread(&fcb_list[i], sizeof(FCB), 1, fp);
-	}
-	*/
-	fclose(fp);
+	fflush(fp);
 	return 0;
 }

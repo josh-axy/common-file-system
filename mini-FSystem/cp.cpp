@@ -22,36 +22,7 @@ void cp(char path1[], char path2[])
 	}*/
 	if (path1[1] == ':'&&path1[2] == '\\')
 	{
-		if (path2[0] == '\\')
-		{
-			cp_s2c(path1, path2);
-		}
-		else
-		{
-			printf("The input command is incorrect. Please re-enter\n");
-			return;
-		}
-	}
-	else if (path2[1] == ':'&&path2[2] == '\\')
-	{
-		if (path1[0] != '\\')
-		{
-			cp_c2s(path1, path2);
-		}
-		else
-		{
-			printf("The input command is incorrect. Please re-enter\n");
-			return;
-		}
-	}
-	else if (path1[1] == ':'&&path1[2] == '\\'&&path2[1] == ':'&&path2[2] == '\\')
-	{
-		printf("The input command is incorrect. Please re-enter\n");
-		return;
-	}
-	else if (path1[0] == '\\' && path2[0] == '\\')
-	{
-		cp_c2c(path1, path2);
+		
 	}
 	return;
 }

@@ -15,15 +15,21 @@ int mkdir(char* path, int mk_type)
 	int i;
 	for (i = strlen(path) - 1; i >= 0; i--)
 	{
-		if (path[i] == '\\')
+		if (path[i] == '/')
 		{
 			if (i == strlen(path) - 1)
 			{
-				cout << "Path ending incorrect. Please re-enter" << endl;
+				cout << "Path ending incorrect. Please re-enter." << endl;
+				return -1;
 			}
 			if (i != 0)
 				path[i] = '\0';
 			break;
+		}
+		if (path[i] == '\\')
+		{
+			cout << "Illegal char '\\' used. Please re-enter." << endl;
+			return -1;
 		}
 	}
 	if (i < 0) {
