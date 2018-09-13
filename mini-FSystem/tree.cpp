@@ -3,18 +3,11 @@
 
 void tree_child(int fcb,int num);
 void printtree1(int num);
-void printtree2(int num);
 void printtree3(int num);
-typedef struct FLAG {
-	int flag;
-	int kkkk;
-}FLAG;
-FLAG flag[FCB_NUM];
-int iflag = 0;
+int kkkk[FCB_NUM];
 int num = -1;
 void tree(char* path)
 {
-	flag[iflag].flag = 0;
 	int tmp_fcb_id = path_to_fcb_id(path, DIR_T);
 	if (tmp_fcb_id == -1)
 		return;
@@ -28,7 +21,7 @@ void tree_child(int fcb,int num)
 	{
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_GREEN | FOREGROUND_BLUE);
 	}
-	if(num)
+	if(fcb_list[fcb].filep[0] != -1)
 		cout << fcb_list[fcb].filename;
 	if (fcb_list[fcb].file_type == DIR_T)
 	{
@@ -36,14 +29,12 @@ void tree_child(int fcb,int num)
 		cout << '/';
 	}
 	cout << endl;
-	iflag++;
-	flag[iflag].flag = /*strlen(fcb_list[fcb].filename)*/3;
 	if (fcb_list[fcb].filep[2] == -1)
 		return;
 	else if(fcb_list[fcb].filep[3] == -1)
 	{
 		printtree1(num);
-		flag[num].kkkk = 1;
+		kkkk[num] = 1;
 		tree_child(fcb_list[fcb].filep[2], num);
 	}
 	else
@@ -51,22 +42,17 @@ void tree_child(int fcb,int num)
 		int q;
 		for (q = 2; fcb_list[fcb].filep[q + 1] != -1; q++)
 		{
-			//flag += 1;
-			//tree_child(fcb_list[fcb].filep[i],flag);
-			int child_id;
 			if (q == EXT_CB)
 			{
 				fcb = fcb_list[fcb].filep[q];
 				q = 1;
 			}
-			child_id = fcb_list[fcb].filep[q];
-			
 			printtree3(num);
-			flag[num].kkkk = 0;
+			kkkk[num] = 0;
 			tree_child(fcb_list[fcb].filep[q], num);
 		}
 		printtree1(num);
-		flag[num].kkkk = 1;
+		kkkk[num] = 1;
 		tree_child(fcb_list[fcb].filep[q], num);
 	}
 	return;
@@ -76,15 +62,17 @@ void printtree1(int num)
 {
 	for (int i = 0; i < num; i++)
 	{
-		for (int j = 0; j < flag[i].flag; j++)
-			printf(" ");
-		if(flag[i].kkkk == 1)
+		if(i != 0)
+			for (int j = 0; j < 3; j++)
+				printf(" ");
+		if(kkkk[i] == 1)
 			printf(" ");
 		else
 			printf("©¦");
 	}
-	for (int j = 0; j < flag[num].flag; j++)
-		printf(" ");
+	if(num)
+		for (int j = 0; j < 3; j++)
+			printf(" ");
 	printf("©¸©¤ ");
 }
 
@@ -92,14 +80,16 @@ void printtree3(int num)
 {
 	for (int i = 0; i < num; i++)
 	{
-		for (int j = 0; j < flag[i].flag; j++)
-			printf(" ");
-		if (flag[i].kkkk == 1)
+		if (i != 0)
+			for (int j = 0; j < 3; j++)
+				printf(" ");
+		if (kkkk[i] == 1)
 			printf(" ");
 		else
 			printf("©¦");
 	}
-	for (int j = 0; j < flag[num].flag; j++)
-		printf(" ");
+	if (num)
+		for (int j = 0; j < 3; j++)
+			printf(" ");
 	printf("©À©¤ ");
 }
