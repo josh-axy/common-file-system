@@ -217,6 +217,20 @@ void judge(char *op1, char *op2, char *op3)
 		else
 			map();   //1
 	}
+	
+	//Map Comman
+	else if (strcmp(op1, "tree") == 0)
+	{
+	if (!sys_mounted)
+	{
+		cout << "No FS mounted!" << endl;
+		return;
+	}
+	else if (op3[0] != '\0')
+		printf("Command syntax is incorrect!\n");
+	else
+		tree(op2);   //1
+	}
 	//Close Command
 	else if (strcmp(op1, "exit") == 0)
 	{

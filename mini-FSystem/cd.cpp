@@ -10,8 +10,6 @@ void cd(char* path)
 	if (path[0] == '\0')
 	{
 		tmp_fcb_id = sys.rootfcb_id;
-		current_fcb_id = tmp_fcb_id;
-		return;
 	}
 	switch (tmp_fcb_id)
 	{
