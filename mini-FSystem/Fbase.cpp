@@ -65,6 +65,11 @@ void IB_AVLTree::Insert(IB_Disk ib)
 	Insert(ib.block_id, ib.size);
 }
 
+void IB_AVLTree::Insert(IB_AVLNode* ib)
+{
+	Insert(ib->IB_id, ib->size_);
+}
+
 void IB_AVLTree::Insert(const int id, const int size)
 {
 	IB_AVLNode *p_parent = 0;
@@ -108,6 +113,11 @@ void IB_AVLTree::Insert(const int id, const int size)
 	}
 
 	InsertAdjust(p_parent);
+}
+
+void IB_AVLTree::Delete(IB_AVLNode* ib)
+{
+	Delete(ib->IB_id, ib->size_);
 }
 
 void IB_AVLTree::Delete(IB_Disk ib)

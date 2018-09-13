@@ -85,9 +85,11 @@ public:
 
 	void Insert(const int id, const int size);      //插入一个结点;
 	void Insert(IB_Disk ib);							//插入一个free ib;
+	void Insert(IB_AVLNode* ib);
 
 	void Delete(const int id, const int size);      //删除IB_id为id的结点，若没有则不删除;
 	void Delete(IB_Disk ib);
+	void Delete(IB_AVLNode* ib);
 
 	IB_AVLNode* Search(const int id, const int size);  //查找值为size的结点;
 	IB_AVLNode* Search(IB_Disk ib);
