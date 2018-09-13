@@ -3,6 +3,7 @@
 #define F_CORE_H
 #include "Fbase.h"
 /*内核函数定义*/
+void print_time(int timestamp);
 int current_time();
 int path_to_fcb_id(char *path, int f_type);
 int cp_s2c(char path1[], char path2[]);

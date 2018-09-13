@@ -34,7 +34,7 @@ typedef struct F_CB {
 	int edit_time;			//文件更新时间
 	int file_size;			//文件占用块数
 	int file_block_id;		//文件头块编号
-	int filep[FCB_WIDTH];			//子目录编号数组
+	int filep[FCB_WIDTH];	//子目录编号数组
 	char filename[14];		//文件名字
 	char file_type;			//文件类型
 }FCB;
