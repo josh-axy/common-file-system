@@ -3,10 +3,10 @@
 /*Mount used Mini_FS*/
 int mount(char arr[])
 {
-	mini_path[3] = '\0';
-	strcat(mini_path, arr);
-	strcat(mini_path, ".dat");
-	if ((fp = fopen(mini_path, "rb+")) == NULL)
+	fs_path[3] = '\0';
+	strcat(fs_path, arr);
+	strcat(fs_path, ".dat");
+	if ((fp = fopen(fs_path, "rb+")) == NULL)
 	{
 		printf("Mount failed.\n");
 		return -1;
@@ -15,20 +15,29 @@ int mount(char arr[])
 	fseek(fp, SUPER_Loacation * BLOCK_SIZE, SEEK_SET);
 	fread(&sys, sizeof(superBlock), 1, fp);
 	//装载控制单元
-	//rewind(fp);
 	fseek(fp, FCB_Location * BLOCK_SIZE, SEEK_SET);
-	//cout << ftell(fp) << endl;
 	for (int i = 0; i < FCB_NUM; i++)
 	{
 		fread(&fcb_list[i], sizeof(FCB), 1, fp);
 	}
 	//装载空闲信息块头
-	fseek(fp, IB_Location * BLOCK_SIZE + sys.freeib_id * BLOCK_SIZE, 0);
-	fread(&ib_tmp, sizeof(FreeIB), 1, fp);
+	fseek(fp, IB_POS(sys.freeib_id), 0);
+	fread(&free_ib_tmp, sizeof(IB_Disk), 1, fp);
+	free_ib_tree.Insert(free_ib_tmp);
+	//建立空闲块平衡二叉树
+	for (int i = 0; free_ib_tmp.next_free_ib !=-1; i++)
+	{
+		fseek(fp, IB_POS(free_ib_tmp.next_free_ib), 0);
+		fread(&free_ib_tmp, sizeof(IB_Disk), 1, fp);
+		free_ib_tree.Insert(free_ib_tmp);
+	}
 	current_fcb_id = sys.rootfcb_id;
-	strcpy(current_path, "\\");
+	strcpy(current_path, "/");
 	printf("Mount success.\n");
+	cout << "\nFree Ib Map:" << endl;
+	free_ib_tree.PrintRDL();
+	cout << endl;
 	sys_mounted = 1;
-	fclose(fp);
+	fflush(fp);
 	return 0;
 }

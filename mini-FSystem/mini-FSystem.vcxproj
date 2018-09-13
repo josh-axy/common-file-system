@@ -189,6 +189,7 @@
     <ClCompile Include="input.cpp" />
     <ClCompile Include="judge.cpp" />
     <ClCompile Include="ls.cpp" />
+    <ClCompile Include="map.cpp" />
     <ClCompile Include="mkdir.cpp" />
     <ClCompile Include="more.cpp" />
     <ClCompile Include="mount.cpp" />

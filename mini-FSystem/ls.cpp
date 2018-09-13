@@ -2,7 +2,7 @@
 #include "Fcommand.h"
 
 /*Show the contents for users*/
-void ls(char* path)
+void ls(char* path, char* mode)
 {
 	int tmp_fcb_id = path_to_fcb_id(path, DIR_T);
 	if (tmp_fcb_id == -1)
@@ -29,7 +29,7 @@ void ls(char* path)
 		}
 		if (fcb_list[child_id].file_type == DIR_T)
 		{
-			cout << '\\';
+			cout << '/';
 		}
 		cout << endl;
 	}

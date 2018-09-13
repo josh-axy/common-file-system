@@ -8,8 +8,9 @@ void exit()
 	fclose(fp);
 	memset(&sys, 0, sizeof(sys));
 	memset(fcb_list, 0, sizeof(fcb_list));
-	memset(ib_tmp, 0, sizeof(ib_tmp));
-	strcmp(mini_path,"D:\\");
+	memset(&free_ib_tmp, 0, sizeof(free_ib_tmp));
+	strcpy(fs_path,"D:\\");
 	strcpy(current_path, "");
+	free_ib_tree.Clear();
 	cout << "Bye." << endl;
 }

@@ -22,7 +22,7 @@ void move(char *src, char *dst)
 	}
 	for (i = strlen(dst) - 1; i >= 0; i--)
 	{
-		if (dst[i] == '\\')
+		if (dst[i] == '/')
 		{
 			if (i != 0)
 				dst[i] = '\0';

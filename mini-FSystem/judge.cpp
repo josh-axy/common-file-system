@@ -7,7 +7,11 @@ void judge(char *op1, char *op2, char *op3)
 	//Create Command
 	if (strcmp(op1, "create") == 0)
 	{
-		if (op2[0] == '\0')
+		if (sys_mounted)
+		{
+			printf("Please exit first!\n");
+		}
+		else if (op2[0] == '\0')
 			printf("Command syntax is incorrect!\n");
 		else if (strlen(op3) != 0)
 			printf("Command syntax is incorrect!\n");
@@ -26,8 +30,11 @@ void judge(char *op1, char *op2, char *op3)
 	//Mount Command
 	else if (strcmp(op1, "mount") == 0)
 	{
-
-		if (op2[0] == '\0')
+		if (sys_mounted)
+		{
+			printf("Please exit first!\n");
+		}
+		else if (op2[0] == '\0')
 			printf("Command syntax is incorrect!\n");
 		else if (strlen(op3) != 0)
 			printf("Command syntax is incorrect!\n");
@@ -35,16 +42,15 @@ void judge(char *op1, char *op2, char *op3)
 			mount(op2);
 	}
 
-	else if (!sys_mounted)
-	{
-		cout << "No FS mounted!" << endl;
-		return;
-	}
-
 	//Copy Command
 	else if (strcmp(op1, "cp") == 0)
 	{
-		if (op2[0] == '\0' || op3[0] == '\0')
+		if (!sys_mounted)
+		{
+			cout << "No FS mounted!" << endl;
+			return;
+		}
+		else if (op2[0] == '\0' || op3[0] == '\0')
 			printf("Command syntax is incorrect!\n");
 		else
 			cp(op2, op3);
@@ -53,8 +59,12 @@ void judge(char *op1, char *op2, char *op3)
 	//Format Command
 	else if (strcmp(op1, "fmt") == 0)
 	{
-
-		if (strlen(op2) != 0)
+		if (!sys_mounted)
+		{
+			cout << "No FS mounted!" << endl;
+			return;
+		}
+		else if (strlen(op2) != 0)
 			printf("Command syntax is incorrect!\n");
 		else
 			format();
@@ -63,25 +73,38 @@ void judge(char *op1, char *op2, char *op3)
 	//Show Contents Command
 	else if (strcmp(op1, "ls") == 0)
 	{
-		if (strlen(op3) != 0)
-			printf("Command syntax is incorrect!\n");
+		if (!sys_mounted)
+		{
+			cout << "No FS mounted!" << endl;
+			return;
+		}
 		else
-			ls(op2);
+			ls(op2, op3);
 	}
 
 	//Enter Contents Command
 	else if (strcmp(op1, "cd") == 0)
 	{
-		if (strlen(op3) != 0)
+		if (!sys_mounted)
+		{
+			cout << "No FS mounted!" << endl;
+			return;
+		}
+		else if (strlen(op3) != 0)
 			printf("Command syntax is incorrect!\n");
 		else
 			cd(op2);
 	}
 
 	//Delete Command
-	else if (strcmp(op1, "del") == 0)
+	else if (strcmp(op1, "del") == 0 || strcmp(op1, "rm") == 0)
 	{
-		if (op2[0] == '\0')
+		if (!sys_mounted)
+		{
+			cout << "No FS mounted!" << endl;
+			return;
+		}
+		else if (op2[0] == '\0')
 			printf("Command syntax is incorrect!\n");
 		else
 			del(op2, op3);  //1
@@ -90,7 +113,12 @@ void judge(char *op1, char *op2, char *op3)
 	//Show Text Command
 	else if (strcmp(op1, "tp") == 0)
 	{
-		if (op2[0] == '\0')
+		if (!sys_mounted)
+		{
+			cout << "No FS mounted!" << endl;
+			return;
+		}
+		else if (op2[0] == '\0')
 			printf("Command syntax is incorrect!\n");
 		else if (strlen(op3) != 0)
 			printf("Command syntax is incorrect!\n");
@@ -101,7 +129,12 @@ void judge(char *op1, char *op2, char *op3)
 	//Paging Show Text Command
 	else if (strcmp(op1, "more") == 0)
 	{
-		if (op2[0] == '\0')
+		if (!sys_mounted)
+		{
+			cout << "No FS mounted!" << endl;
+			return;
+		}
+		else if (op2[0] == '\0')
 			printf("Command syntax is incorrect!\n");
 		else if (strlen(op3) != 0)
 			printf("Command syntax is incorrect!\n");
@@ -112,7 +145,12 @@ void judge(char *op1, char *op2, char *op3)
 	//Show File Attribute Command
 	else if (strcmp(op1, "attr") == 0)
 	{
-		if (op2[0] == '\0')
+		if (!sys_mounted)
+		{
+			cout << "No FS mounted!" << endl;
+			return;
+		}
+		else if (op2[0] == '\0')
 			printf("Command syntax is incorrect!\n");
 		else if (strlen(op3) != 0)
 			printf("Command syntax is incorrect!\n");
@@ -124,7 +162,12 @@ void judge(char *op1, char *op2, char *op3)
 	//Create Directory Command
 	else if (strcmp(op1, "mkdir") == 0)
 	{
-		if (op2[0] == '\0')
+		if (!sys_mounted)
+		{
+			cout << "No FS mounted!" << endl;
+			return;
+		}
+		else if (op2[0] == '\0')
 			printf("Command syntax is incorrect!\n");
 		else if (strlen(op3) != 0)
 			printf("Command syntax is incorrect!\n");
@@ -133,9 +176,14 @@ void judge(char *op1, char *op2, char *op3)
 	}
 
 	//Create File Command
-	else if (strcmp(op1, "mkf") == 0)
+	else if (strcmp(op1, "mkf") == 0 || strcmp(op1, "mkfile") == 0)
 	{
-		if (op2[0] == '\0')
+		if (!sys_mounted)
+		{
+			cout << "No FS mounted!" << endl;
+			return;
+		}
+		else if (op2[0] == '\0')
 			printf("Command syntax is incorrect!\n");
 		else if (strlen(op3) != 0)
 			printf("Command syntax is incorrect!\n");
@@ -144,23 +192,45 @@ void judge(char *op1, char *op2, char *op3)
 	}
 
 	//Move Command
-	else if (strcmp(op1, "mv") == 0)
+	else if (strcmp(op1, "mv") == 0 || strcmp(op1, "move") == 0)
 	{
-		if (op2[0] == '\0')
+		if (!sys_mounted)
+		{
+			cout << "No FS mounted!" << endl;
+			return;
+		}
+		else if (op2[0] == '\0')
 			printf("Command syntax is incorrect!\n");
 		else
 			move(op2, op3);   //1
 	}
-
+	//Map Comman
+	else if (strcmp(op1, "map") == 0)
+	{
+		if (!sys_mounted)
+		{
+			cout << "No FS mounted!" << endl;
+			return;
+		}
+		else if (op2[0] != '\0')
+			printf("Command syntax is incorrect!\n");
+		else
+			map();   //1
+	}
 	//Close Command
 	else if (strcmp(op1, "exit") == 0)
 	{
-	if (op2[0] != '\0')
-		printf("Command syntax is incorrect!\n");
-	else if (op3[0] != '\0')
-		printf("Command syntax is incorrect!\n");
-	else
-		exit();   //1
+		if (!sys_mounted)
+		{
+			cout << "No FS mounted!" << endl;
+			return;
+		}
+		else if (op2[0] != '\0')
+			printf("Command syntax is incorrect!\n");
+		else if (op3[0] != '\0')
+			printf("Command syntax is incorrect!\n");
+		else
+			exit();   //1
 	}
 
 	else
