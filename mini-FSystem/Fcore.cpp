@@ -65,7 +65,7 @@ int path_to_fcb_id(char *path, int f_type)
 			{
 				strcpy(name[k++], input_tmp);
 			}
-			memset(input_tmp, 0, sizeof(input_tmp));
+			::memset(input_tmp, 0, sizeof(input_tmp));
 			j = 0;
 		}
 		else

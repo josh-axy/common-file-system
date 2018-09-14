@@ -79,7 +79,17 @@ void judge(char *op1, char *op2, char *op3)
 			return;
 		}
 		else
-			ls(op2, op3);
+		{
+			if (op2[0] == '-')
+			{
+				ls(op3, op2);
+			}
+			else
+			{
+				ls(op2, op3);
+			}
+		}
+			
 	}
 
 	//Enter Contents Command
@@ -155,7 +165,7 @@ void judge(char *op1, char *op2, char *op3)
 		else if (strlen(op3) != 0)
 			printf("Command syntax is incorrect!\n");
 		else
-			attr(op2);   //1
+			attr(op2);   
 	}
 
 
@@ -172,7 +182,7 @@ void judge(char *op1, char *op2, char *op3)
 		else if (strlen(op3) != 0)
 			printf("Command syntax is incorrect!\n");
 		else
-			mkdir(op2, DIR_T);   //1
+			mkdir(op2, DIR_T);   
 	}
 
 	//Create File Command
@@ -188,7 +198,7 @@ void judge(char *op1, char *op2, char *op3)
 		else if (strlen(op3) != 0)
 			printf("Command syntax is incorrect!\n");
 		else
-			mkdir(op2, FILE_T);   //1
+			mkdir(op2, FILE_T);   
 	}
 
 	//Move Command
@@ -202,7 +212,7 @@ void judge(char *op1, char *op2, char *op3)
 		else if (op2[0] == '\0')
 			printf("Command syntax is incorrect!\n");
 		else
-			move(op2, op3);   //1
+			move(op2, op3);   
 	}
 	//Map Comman
 	else if (strcmp(op1, "map") == 0)
@@ -215,10 +225,10 @@ void judge(char *op1, char *op2, char *op3)
 		else if (op2[0] != '\0')
 			printf("Command syntax is incorrect!\n");
 		else
-			map();   //1
+			map();   
 	}
 	
-	//Map Comman
+	//Tree Comman
 	else if (strcmp(op1, "tree") == 0)
 	{
 	if (!sys_mounted)
@@ -229,7 +239,7 @@ void judge(char *op1, char *op2, char *op3)
 	else if (op3[0] != '\0')
 		printf("Command syntax is incorrect!\n");
 	else
-		tree(op2);   //1
+		tree(op2);   
 	}
 	//Close Command
 	else if (strcmp(op1, "exit") == 0)
@@ -244,7 +254,7 @@ void judge(char *op1, char *op2, char *op3)
 		else if (op3[0] != '\0')
 			printf("Command syntax is incorrect!\n");
 		else
-			exit();   //1
+			exit();   
 	}
 
 	else
