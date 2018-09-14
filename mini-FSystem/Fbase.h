@@ -51,26 +51,37 @@ typedef struct ext_CB {
 typedef struct I_B {
 	int block_id;			//自己的块号
 	int size;				//持续长度
-	int last_free_ib;			//前面块头的块号
-	int next_free_ib;			//后面块头的块号
+	int last_id;			//前面块头的块号
+	int next_id;			//后面块头的块号
 }IB_Disk;
 
 class IB_AVLNode {
 	friend class IB_AVLTree;
 private:
+	int IB_id_;
 	int size_;
+	int last_id_;
+	int next_id_;
 	IB_AVLNode* p_lchild_;
 	IB_AVLNode* p_rchild_;
 	IB_AVLNode* p_parent_;
 	int height_;
-	int IB_id;
 public:
-	IB_AVLNode();  //默认构造函数，对除size_, IB_id外的所有成员变量赋初值;
-	IB_AVLNode(const int id, const int key);  //对所有成员变量赋初值;
-	void SetValue(const int id, const int key);
+	IB_AVLNode();  //默认构造函数，不用;
+	IB_AVLNode(const int id);	//以ID为排序值
+	IB_AVLNode(const int id, const int size, const int last_id, const int next_id);  //以size为排序值，对所有成员变量赋初值;
+	IB_AVLNode(const IB_AVLNode & ib);
+	IB_AVLNode(const IB_Disk & ib);
+	void SetValue(const int id, const int size);
+	void SetValue(const IB_Disk & ib);
 	void Print();
 	int GetSize() const;
 	int GetId() const;
+	int Last() const;
+	int Next() const;
+	IB_AVLNode* lchild();
+	IB_AVLNode* rchild();
+	IB_AVLNode* parent();
 };
 
 
@@ -83,16 +94,20 @@ public:
 
 	~IB_AVLTree();   //调用Clear()清理树，释放内存;
 
-	void Insert(const int id, const int size);      //插入一个结点;
-	void Insert(IB_Disk ib);							//插入一个free ib;
+	void Insert(const int id);		//插入ID
+	void Insert(const int id, const int size, const int last_id, const int next_id);      //插入一个结点;
+	void Insert(IB_Disk* ib);							//插入一个free ib;
 	void Insert(IB_AVLNode* ib);
 
+	void Delete(const int id);		//删除ID
 	void Delete(const int id, const int size);      //删除IB_id为id的结点，若没有则不删除;
-	void Delete(IB_Disk ib);
+	void Delete(IB_Disk* ib);
 	void Delete(IB_AVLNode* ib);
 
+	IB_AVLNode* GetRoot();
 	IB_AVLNode* Search(const int id, const int size);  //查找值为size的结点;
-	IB_AVLNode* Search(IB_Disk ib);
+	IB_AVLNode* Search(IB_AVLNode* ib);
+	IB_Disk* Search(IB_Disk* ib);
 
 	void PrintDLR();     //先根遍历打印整棵树;
 
@@ -146,6 +161,7 @@ extern FILE *fp;
 extern superBlock sys;
 extern FCB fcb_list[FCB_NUM];
 extern IB_AVLTree free_ib_tree;
+extern IB_AVLTree id_tree;
 extern IB_Disk free_ib_tmp;
 extern int current_fcb_id;
 extern int sys_mounted;

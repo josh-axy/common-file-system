@@ -2,7 +2,7 @@
 #include "Fcommand.h"
 /*Format 1G space*/
 int format() {
-	superBlock block;
+	superBlock lump;
 	if (strcmp(fs_path, "D:\\") == 0)
 	{
 		printf("Please create a mini_FS first!\n");
@@ -16,30 +16,39 @@ int format() {
 	rewind(fp);
 	fseek(fp, SUPER_Loacation, SEEK_SET);
 	//系统块初始化
-	block.fcb_Location = FCB_Location;
-	block.ib_location = IB_Location;
-	block.fcb_size = FCB_SIZE;
-	block.blk_size = BLOCK_SIZE;
-	block.superblock_size = sizeof(superBlock);
-	block.superblock_location = 0;
-	block.last_write_ib = -1;
-	block.last_write_fcb = 0;
-	block.freefcb_id = 1;
-	block.rootfcb_id = 0;
-	block.freeib_id = 0;
-	block.last_freefcb_id = FCB_NUM - 1;
-	block.last_freeib_id = 0;
-	block.last_write_time = current_time();
-	fwrite(&block, sizeof(superBlock), 1, fp);
+	lump.fcb_Location = FCB_Location;
+	lump.ib_location = IB_Location;
+	lump.fcb_size = FCB_SIZE;
+	lump.blk_size = BLOCK_SIZE;
+	lump.superblock_size = sizeof(superBlock);
+	lump.superblock_location = 0;
+	lump.last_write_ib = -1;
+	lump.last_write_fcb = 0;
+	lump.rootfcb_id = 0;
+	lump.freefcb_id = 1;
+	lump.freeib_id = 1;
+	lump.last_freefcb_id = FCB_NUM - 1;
+	lump.last_freeib_id = 1;
+	lump.last_write_time = current_time();
+	fwrite(&lump, sizeof(superBlock), 1, fp);
 	fflush(fp);
 
 	//空文件头初始化
 	IB_Disk ib;
+	for (int i = 0; i < IB_NUM - 1; i++)
+	{
+		fseek(fp, IB_POS(i), SEEK_SET);
+		ib.block_id = 0;
+		ib.size = 0;
+		ib.last_id = 0;
+		ib.next_id = 0;
+		fwrite(&ib, sizeof(FCB), 1, fp);
+	}
 	fseek(fp, IB_Location * BLOCK_SIZE, SEEK_SET);
-	ib.block_id = 4033;
+	ib.block_id = 1;
 	ib.size = IB_NUM;
-	ib.last_free_ib = -1;		//-1表示此为空文件信息块头
-	ib.next_free_ib = -1;		//-1表示此为最后一段空文件信息段
+	ib.last_id = 0;		//0表示此为空文件信息块头
+	ib.next_id = 0;		//0表示此为最后一段空文件信息段
 	fwrite(&ib, sizeof(IB_Disk), 1, fp);
 	fflush(fp);
 
@@ -98,13 +107,14 @@ int format() {
 		fseek(fp, IB_POS(sys.freeib_id), 0);
 		fread(&free_ib_tmp, sizeof(IB_Disk), 1, fp);
 		free_ib_tree.Clear();
-		free_ib_tree.Insert(free_ib_tmp);
+		id_tree.Clear();
+		free_ib_tree.Insert(&free_ib_tmp);
 		//建立空闲块平衡二叉树
-		for (int i = 0; free_ib_tmp.next_free_ib != -1; i++)
+		for (int i = 0; free_ib_tmp.next_id != 0; i++)
 		{
-			fseek(fp, IB_POS(free_ib_tmp.next_free_ib), 0);
+			fseek(fp, IB_POS(free_ib_tmp.next_id), 0);
 			fread(&free_ib_tmp, sizeof(IB_Disk), 1, fp);
-			free_ib_tree.Insert(free_ib_tmp);
+			free_ib_tree.Insert(&free_ib_tmp);
 		}
 		current_fcb_id = sys.rootfcb_id;
 		strcpy(current_path, "/");

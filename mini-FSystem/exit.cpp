@@ -12,5 +12,6 @@ void exit()
 	strcpy(fs_path,"D:\\");
 	strcpy(current_path, "");
 	free_ib_tree.Clear();
+	id_tree.Clear();
 	cout << "Bye." << endl;
 }

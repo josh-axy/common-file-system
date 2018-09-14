@@ -7,11 +7,12 @@
 void cp(char path1[], char path2[])
 {
 	int len1, len2;
+	int dir_fcb_id;
 	len1 = strlen(path1);
 	len2 = strlen(path2);
-	if (len1 < 3 || len2 < 3)
+	if (len1 < 3 && len2 < 3)
 	{
-		printf("The input command is incorrect. Please re-enter\n");
+		printf("Path format incorrect. Please re-enter.\n");
 		return;
 	}
 	/*
@@ -22,7 +23,7 @@ void cp(char path1[], char path2[])
 	}*/
 	if (path1[1] == ':'&&path1[2] == '\\')
 	{
-		
+		make(path1, FILE_T, path2);
 	}
 	return;
 }

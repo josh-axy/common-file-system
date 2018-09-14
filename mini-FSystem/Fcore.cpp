@@ -204,13 +204,16 @@ int new_fcb(int dir_fcb_id, int fcb_type, char *name, char *src_f_path)
 				}
 				fseek(fp_tmp, IB_POS(fcb_list[f_fcb_id].file_block_id), SEEK_SET);
 			}
-			file_info = write_ib(f_len, fp_tmp);
 		}
 		else
 		{
 			f_len = BLOCK_SIZE - sizeof(IB_Disk);
 			fp_tmp = NULL;
-			file_info = write_ib(f_len, NULL);
+		}
+		file_info = write_ib(f_len, fp_tmp);
+		if (file_info == NULL)
+		{
+			return -3;
 		}
 	}
 	/*查重名*/
@@ -266,9 +269,10 @@ int new_fcb(int dir_fcb_id, int fcb_type, char *name, char *src_f_path)
 	if (file_info != NULL)
 	{
 		fcb_list[tmp_fcb_id].file_block_id = file_info->block_id;
-		fcb_list[tmp_fcb_id].file_size = 1 * BLOCK_SIZE;
+		fcb_list[tmp_fcb_id].file_size = f_len;
 		sys.last_write_ib = file_info->block_id;
 		write_sys();
+		delete file_info;
 	}
 	strcpy(fcb_list[tmp_fcb_id].filename, name);
 	write_fcb(tmp_fcb_id);
@@ -420,6 +424,7 @@ int drop_fcb(int fcb_id, int r_mode)
 		cout << "Drop FCB failed." << endl;
 		return -2;
 	}
+	//递归调用
 	if (fcb_list[fcb_id].filep[2]!=-1)
 	{
 		if (r_mode == TRUE)
@@ -440,7 +445,11 @@ int drop_fcb(int fcb_id, int r_mode)
 			return -1;
 		}
 	}
-	/*FCB置空标识*/
+	if (fcb_list[fcb_id].file_type == FILE_T)
+	{
+		drop_ib(fcb_id);
+	}
+	/*FCB置空标识并链接*/
 	fcb_list[fcb_id].file_type = EMPTY_T;
 	fcb_list[fcb_id].filep[0] = -1;
 	fcb_list[sys.last_freefcb_id].filep[0] = fcb_id;
@@ -522,11 +531,18 @@ void write_fcb(int update_fcb_id)
 }
 
 /*获取空白IB*/
-IB_AVLNode* get_free_ib(int ib_size)
+IB_Disk* get_free_ib(int ib_size)
 {
-	IB_AVLNode* p_ib;
-	p_ib = free_ib_tree.Search(-1, ib_size);
-	return p_ib;
+	IB_Disk* ib = new IB_Disk;
+	if (fp == NULL)
+	{
+		printf("No system mounted. Get free ib failed.\n");
+		return NULL;
+	}
+	ib->block_id = -1;
+	ib->size = ib_size;
+	ib = free_ib_tree.Search(ib);
+	return ib;
 }
 
 /*获取IB信息*/
@@ -557,9 +573,11 @@ IB_Disk* write_ib(int f_size, FILE* fp_tmp)
 	char *buffer;
 	int blk_size;
 	int rest_size;
-	IB_Disk* ib_info = new IB_Disk;
-	IB_AVLNode *p_free_ib = new IB_AVLNode;
-	IB_AVLNode *p_new_ib;
+	int i;
+	IB_Disk* p_old_ib;
+	IB_Disk* p_new_ib = new IB_Disk;
+	IB_Disk* ib_tmp = new IB_Disk;
+	IB_AVLNode* ib_avl_tmp;
 
 	if (fp == NULL)
 	{
@@ -567,28 +585,34 @@ IB_Disk* write_ib(int f_size, FILE* fp_tmp)
 		return NULL;
 	}
 	//将字节数转化为块数
-	blk_size = (f_size + sizeof(IB_Disk)) / BLOCK_SIZE + ((f_size + sizeof(IB_Disk)) % BLOCK_SIZE) % 2;
+	blk_size = (f_size + sizeof(IB_Disk)) / BLOCK_SIZE;
+	if ((f_size + sizeof(IB_Disk)) % BLOCK_SIZE)
+	{
+		blk_size++;
+	}
 	rest_size = 0;
 	/*检查IB空间*/
-	p_free_ib = get_free_ib(blk_size);
-	while (p_free_ib == NULL)
+	p_old_ib = get_free_ib(blk_size);
+	while (p_old_ib == NULL)
 	{
-		blk_size--;
-		rest_size++;
-		p_free_ib = get_free_ib(blk_size);
 		if (blk_size == 0 || rest_size > blk_size)
 		{
 			cout << "Disk full. Delete something to create." << endl;
 			return NULL;
 		}
+		blk_size--;
+		rest_size++;
+		p_old_ib = get_free_ib(blk_size);
 	}
 
 	/*开始写*/
-	ib_id = p_free_ib->GetId();
-	ib_info->block_id = ib_id;
-	ib_info->size = blk_size;
+	ib_id = p_old_ib->block_id;
+	ib_tmp->block_id = ib_id;
+	ib_tmp->size = blk_size;
+	ib_tmp->last_id = -1;
+	ib_tmp->next_id = -1;
 	fseek(fp, IB_POS(ib_id), SEEK_SET);
-	fwrite(ib_info, sizeof(IB_Disk), 1, fp);
+	fwrite(ib_tmp, sizeof(IB_Disk), 1, fp);
 	if (fp_tmp == NULL)
 	{
 		buffer = new char[f_size];
@@ -600,10 +624,54 @@ IB_Disk* write_ib(int f_size, FILE* fp_tmp)
 		fwrite(fp_tmp, f_size, 1, fp);
 	}
 	fflush(fp);
-	p_new_ib = new IB_AVLNode(ib_id + blk_size, ib_id - blk_size);
-	/*更新IB树与磁盘*/
-	update_ib(p_free_ib, p_new_ib);
-	return ib_info;
+	/*更新IB块*/
+	if (p_old_ib->size > blk_size)
+	{
+		p_new_ib->block_id = p_old_ib->block_id + blk_size;
+		p_new_ib->size = p_old_ib->size - blk_size;
+		p_new_ib->next_id = p_old_ib->next_id;
+		p_new_ib->last_id = p_old_ib->last_id;
+		/*更新IB树节点*/
+		update_free_ib(p_old_ib, p_new_ib);
+	}
+	/*当前空闲IB段用光*/
+	else
+	{
+		if (p_old_ib->last_id != 0)
+		{
+			p_new_ib = get_ib_info(p_old_ib->last_id);
+			p_new_ib->next_id = p_old_ib->next_id;
+			ib_avl_tmp = free_ib_tree.Search(p_new_ib->block_id, p_new_ib->size);
+			ib_avl_tmp->SetValue(*p_new_ib);
+			fseek(fp, IB_POS(p_new_ib->block_id), SEEK_SET);
+			fwrite(p_new_ib, sizeof(IB_Disk), 1, fp);
+			fflush(fp);
+		}
+		else
+		{
+			sys.freeib_id = p_old_ib->next_id;
+			write_sys();
+		}
+		if (p_old_ib->next_id != 0)
+		{
+			p_new_ib = get_ib_info(p_old_ib->next_id);
+			p_new_ib->last_id = p_old_ib->last_id;
+			ib_avl_tmp = free_ib_tree.Search(p_new_ib->block_id, p_new_ib->size);
+			ib_avl_tmp->SetValue(*p_new_ib);
+			fseek(fp, IB_POS(p_new_ib->block_id), SEEK_SET);
+			fwrite(p_new_ib, sizeof(IB_Disk), 1, fp);
+			fflush(fp);
+		}
+		else
+		{
+			sys.last_freeib_id = p_old_ib->last_id;
+			write_sys();
+		}
+	}
+	delete buffer;
+	delete p_old_ib;
+	delete p_new_ib;
+	return ib_tmp;
 }
 
 /*移动IB*/
@@ -613,17 +681,157 @@ int move_ib(int src_ib_id, int dst_ib_id)
 }
 
 /*释放IB*/
-int drop_ib(int ib_id)
+void drop_ib(int fcb_id)
 {
-
-	return 0;
+	IB_Disk* ib_tmp = new IB_Disk;
+	ib_tmp->block_id = fcb_list[fcb_id].file_block_id;
+	ib_tmp = get_ib_info(ib_tmp->block_id);
+	ib_tmp->last_id = 0;
+	ib_tmp->next_id = 0;
+	erase_ib(ib_tmp->block_id, 1);
+	update_free_ib(NULL, ib_tmp);
+	delete ib_tmp;
+	return;
 }
 
-/*更新IB树与磁盘*/
-void update_ib(IB_AVLNode* old_ib, IB_AVLNode* new_ib)
+/*擦除IB*/
+void erase_ib(int ib_id, int size)
 {
-	free_ib_tree.Delete(old_ib);
+	char *buffer = new char[size*BLOCK_SIZE];
+	if (fp == NULL)
+	{
+		printf("Update IB failed.\n");
+		return;
+	}
+	memset(buffer, 0, size * BLOCK_SIZE * sizeof(char));
+	fseek(fp, IB_POS(ib_id), SEEK_SET);
+	fwrite(buffer, size * BLOCK_SIZE, 1, fp);
+	fflush(fp);
+	delete buffer;
+	return;
+}
+
+/*更新空闲IB树与磁盘*/
+void update_free_ib(IB_Disk* old_ib, IB_Disk* new_ib)
+{
+	IB_Disk *ib_tmp;
+	IB_AVLNode *ib_avl_tmp;
+	if (fp == NULL)
+	{
+		printf("Update IB failed.\n");
+		return;
+	}
+	if (old_ib == NULL)
+	{
+		link_ib(new_ib);
+	}
+	else
+	{
+		fseek(fp, IB_POS(new_ib->block_id), SEEK_SET);
+		fwrite(new_ib, sizeof(IB_Disk), 1, fp);
+		fflush(fp);
+		free_ib_tree.Delete(old_ib);
+	}
 	free_ib_tree.Insert(new_ib);
+	if (new_ib->last_id != 0)
+	{
+		ib_tmp = get_ib_info(new_ib->last_id);
+		ib_tmp->next_id = new_ib->block_id;
+		fseek(fp, IB_POS(ib_tmp->block_id), SEEK_SET);
+		fwrite(ib_tmp, sizeof(IB_Disk), 1, fp);
+		fflush(fp);
+		ib_avl_tmp = free_ib_tree.Search(ib_tmp->block_id, ib_tmp->size);
+		ib_avl_tmp->SetValue(*ib_tmp);
+		delete ib_tmp;
+	}
+	else
+	{
+		sys.freeib_id = new_ib->block_id;
+		write_sys();
+	}
+	if (new_ib->next_id != 0)
+	{
+		ib_tmp = get_ib_info(new_ib->next_id);
+		ib_tmp->last_id = new_ib->block_id;
+		fseek(fp, IB_POS(ib_tmp->block_id), SEEK_SET);
+		fwrite(ib_tmp, sizeof(IB_Disk), 1, fp);
+		fflush(fp);
+		ib_avl_tmp = free_ib_tree.Search(ib_tmp->block_id, ib_tmp->size);
+		ib_avl_tmp->SetValue(*ib_tmp);
+		delete ib_tmp;
+	}
+	else
+	{
+		sys.last_freeib_id = new_ib->block_id;
+		write_sys();
+	}
+	return;
+}
+
+/*连接或合并相邻空IB*/
+void link_ib(IB_Disk* new_ib)
+{
+	IB_AVLNode* op_ib;
+	IB_Disk* free_ib_disk;
+	IB_AVLNode* free_ib = new IB_AVLNode;
+	IB_AVLNode* ib_avl_tmp;
+	queue<IB_AVLNode*> path;
+	IB_AVLNode* id_left = NULL;
+	IB_AVLNode* id_right = NULL;
+
+	op_ib = id_tree.GetRoot();
+	path.push(op_ib);
+	while (!path.empty())
+	{
+		op_ib = path.front();
+		path.pop();
+		if (op_ib == NULL)
+			continue;
+		free_ib_disk = get_ib_info(op_ib->GetId());
+		free_ib->SetValue(*free_ib_disk);
+		//右侧空白块
+		if (new_ib->block_id < free_ib->GetId())
+		{
+			path.push(op_ib->lchild());
+			new_ib->next_id = free_ib->GetId();
+			if (new_ib->block_id + new_ib->size == free_ib->GetId())
+			{
+				new_ib->next_id = free_ib->Next();
+				new_ib->size += free_ib->GetSize();
+				id_right = new IB_AVLNode(*free_ib);
+				erase_ib(free_ib->GetId(), 1);
+			}
+		}
+		//左侧空白块
+		else
+		{
+			path.push(op_ib->rchild());
+			new_ib->last_id = free_ib->GetId();
+			if (free_ib->GetId() + free_ib->GetSize() == new_ib->block_id)
+			{
+				new_ib->last_id = free_ib->Last();
+				new_ib->block_id = free_ib->GetId();
+				new_ib->size += free_ib->GetSize();
+				id_left = new IB_AVLNode(*free_ib);
+				erase_ib(free_ib->GetId(), 1);
+			}
+		}
+	}
+	if (id_right)
+	{
+		free_ib_tree.Delete(id_right);
+		delete id_right;
+	}
+	if (id_left)
+	{
+		free_ib_tree.Delete(id_left);
+		delete id_left;
+	}
+	fseek(fp, IB_POS(new_ib->block_id), SEEK_SET);
+	fwrite(new_ib, sizeof(IB_Disk), 1, fp);
+	fflush(fp);
+	delete free_ib;
+	return;
 }
 
 /*更新系统块*/

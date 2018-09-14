@@ -63,7 +63,7 @@ void printtree1(int num)
 	for (int i = 0; i < num; i++)
 	{
 		if(i != 0)
-			for (int j = 0; j < 3; j++)
+			for (int j = 0; j < 2; j++)
 				printf(" ");
 		if(kkkk[i] == 1)
 			printf(" ");
@@ -71,7 +71,7 @@ void printtree1(int num)
 			printf("©¦");
 	}
 	if(num)
-		for (int j = 0; j < 3; j++)
+		for (int j = 0; j < 2; j++)
 			printf(" ");
 	printf("©¸©¤ ");
 }
@@ -81,7 +81,7 @@ void printtree3(int num)
 	for (int i = 0; i < num; i++)
 	{
 		if (i != 0)
-			for (int j = 0; j < 3; j++)
+			for (int j = 0; j < 2; j++)
 				printf(" ");
 		if (kkkk[i] == 1)
 			printf(" ");
@@ -89,7 +89,7 @@ void printtree3(int num)
 			printf("©¦");
 	}
 	if (num)
-		for (int j = 0; j < 3; j++)
+		for (int j = 0; j < 2; j++)
 			printf(" ");
 	printf("©À©¤ ");
 }

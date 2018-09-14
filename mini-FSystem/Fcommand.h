@@ -16,7 +16,7 @@ void ls(char* path, char* mode);
 void create(char *name);
 void judge(char* op1, char* op2, char* op3);
 void move(char *src, char *dst);
-int mkdir(char* path, int mk_type);
+int make(char* path, int mk_type, char* src);
 void help(char * order);
 void readtxt(char *);
 void more(char *);
