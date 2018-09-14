@@ -32,6 +32,10 @@ void map()
 		printf("File number %d: begin from block %d\n", flag,lastfull_head);
 		printf("File number %d: block length is  %d\n\n", flag, lastfull_length);
 		flag++;
+		if (ib_map->next_id == -1)
+		{
+			break;
+		}
 		ib_tmp = ib_map;
 		ib_map = get_ib_info(ib_tmp->next_id);
 	}

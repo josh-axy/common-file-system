@@ -40,12 +40,16 @@ void tree_child(int fcb,int num)
 	else
 	{
 		int q;
-		for (q = 2; fcb_list[fcb].filep[q + 1] != -1; q++)
+		for (q = ((fcb_list[fcb].file_type == EXT_T) ? 1 : 2);; q++)
 		{
 			if (q == EXT_CB)
 			{
 				fcb = fcb_list[fcb].filep[q];
 				q = 1;
+			}
+			if (fcb_list[fcb].filep[q + 1] == -1)
+			{
+				break;
 			}
 			printtree3(num);
 			kkkk[num] = 0;

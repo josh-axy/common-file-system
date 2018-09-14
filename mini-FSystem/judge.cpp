@@ -105,6 +105,19 @@ void judge(char *op1, char *op2, char *op3)
 			cout << free_ib_tmp.block_id << ' ' << free_ib_tmp.size << ' ' << free_ib_tmp.last_id << ' ' << free_ib_tmp.next_id << endl;
 			i++;
 		}
+		cout << "fcb first: " << sys.freefcb_id << "  last: " << sys.last_freefcb_id << endl;
+		for (int i = 0; i < cnt; i++)
+		{
+			//×°ÔØFCBÐÅÏ¢
+			cout << "name:  " << fcb_list[i].filename << "  type:  " << (int)fcb_list[i].file_type << "  block_id:  " << fcb_list[i].file_block_id << "  size:  " << fcb_list[i].file_size << endl;
+			cout << "filep: ";
+			for (int j = 0; fcb_list[i].filep[j] != -1; j++)
+			{
+				
+				cout << fcb_list[i].filep[j] << "  ";
+			}
+			cout << endl;
+		}
 	}
 
 	//Enter Contents Command
