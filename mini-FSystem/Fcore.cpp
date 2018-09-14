@@ -466,7 +466,7 @@ int drop_fcb(int fcb_id, int r_mode)
 		origin_fcb_id = fcb_list[origin_fcb_id].filep[0];
 	}
 	/*É¾³ýÔ­Á´½Ó*/
-	for (origin_child = (fcb_list[origin_child].file_type == EXT_T) ? 1 : 2; fcb_list[origin_fcb_id].filep[origin_child] != -1; origin_child++)
+	for (origin_child = (fcb_list[origin_fcb_id].file_type == EXT_T) ? 1 : 2; fcb_list[origin_fcb_id].filep[origin_child] != -1; origin_child++)
 	{
 		if (origin_child == EXT_CB)
 		{

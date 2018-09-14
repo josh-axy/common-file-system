@@ -6,7 +6,7 @@ void map()
 	int flag = 1;
 	IB_Disk* ib_map;
 	int i = 1;//block search number
-	while (i != 258112)
+	while (i < 258112)
 	{
 		ib_map = get_ib_info(i);
 		if (ib_map->last_id == -1)
@@ -15,11 +15,12 @@ void map()
 			flag++;
 			i = i + ib_map->size;
 		}
-		else if (ib_map->last_id == 0)
+		else
 		{
 			i = i + ib_map->size;
 		}
 	}
+	return;
 	/*IB_Disk* ib_tmp;
 	IB_Disk* ib_map;
 	int flag = 1;

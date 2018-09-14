@@ -29,7 +29,7 @@ void judge(char *op1, char *op2, char *op3)
 	}
 
 	//Mount Command
-	else if (strcmp(op1, "mount") == 0)
+	else if (strcmp(op1, "mount") == 0 || strcmp(op1, "M") == 0)
 	{
 		if (sys_mounted)
 		{
@@ -58,7 +58,7 @@ void judge(char *op1, char *op2, char *op3)
 	}
 
 	//Format Command
-	else if (strcmp(op1, "fmt") == 0)
+	else if (strcmp(op1, "fmt") == 0 || strcmp(op1, "format") == 0)
 	{
 		if (!sys_mounted)
 		{
@@ -111,7 +111,7 @@ void judge(char *op1, char *op2, char *op3)
 			//×°ÔØFCBÐÅÏ¢
 			cout << "name:  " << fcb_list[i].filename << "  type:  " << (int)fcb_list[i].file_type << "  block_id:  " << fcb_list[i].file_block_id << "  size:  " << fcb_list[i].file_size << endl;
 			cout << "filep: ";
-			for (int j = 0; fcb_list[i].filep[j] != -1; j++)
+			for (int j = 0; fcb_list[i].filep[j] >= 0; j++)
 			{
 				
 				cout << fcb_list[i].filep[j] << "  ";
