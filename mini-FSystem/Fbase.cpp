@@ -7,6 +7,7 @@ superBlock sys;
 FCB fcb_list[FCB_NUM];
 IB_Disk free_ib_tmp;
 IB_AVLTree free_ib_tree;
+IB_AVLTree id_tree;
 int current_fcb_id;
 int sys_mounted = 0;
 char* ib_tmp;
@@ -17,19 +18,31 @@ char current_path[128] = { '\0' };
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 IB_AVLNode::IB_AVLNode() :p_lchild_(NULL), p_rchild_(NULL), p_parent_(NULL), height_(1) {}
 
+IB_AVLNode::IB_AVLNode(const int id) : p_lchild_(NULL), p_rchild_(NULL), p_parent_(NULL), height_(1), size_(id) {}
 
-IB_AVLNode::IB_AVLNode(const int id, const int key) : p_lchild_(NULL), p_rchild_(NULL), p_parent_(NULL), height_(1), size_(key), IB_id(id) {}
+IB_AVLNode::IB_AVLNode(const int id, const int size, const int last_id, const int next_id) : p_lchild_(NULL), p_rchild_(NULL), p_parent_(NULL), height_(1), size_(size), IB_id_(id), last_id_(last_id), next_id_(next_id){}
 
+IB_AVLNode::IB_AVLNode(const IB_AVLNode & ib) : p_lchild_(NULL), p_rchild_(NULL), p_parent_(NULL), height_(1), size_(ib.size_), IB_id_(ib.IB_id_), last_id_(ib.last_id_), next_id_(ib.next_id_) {}
 
-void IB_AVLNode::SetValue(const int id, const int key)
+IB_AVLNode::IB_AVLNode(const IB_Disk & ib) : p_lchild_(NULL), p_rchild_(NULL), p_parent_(NULL), height_(1), size_(ib.size), IB_id_(ib.block_id), last_id_(ib.last_id), next_id_(ib.next_id) {}
+
+void IB_AVLNode::SetValue(const int id, const int size)
 {
-	IB_id = id;
-	size_ = key;
+	IB_id_ = id;
+	size_ = size;
+}
+
+void IB_AVLNode::SetValue(const IB_Disk & ib)
+{
+	IB_id_ = ib.block_id;
+	size_ = ib.size;
+	last_id_ = ib.last_id;
+	next_id_ = ib.next_id;
 }
 
 void IB_AVLNode::Print()
 {
-	cout << "id:" << IB_id << ", size:" << size_ << endl;
+	cout << "id:" << IB_id_ << ", size:" << size_ << endl;
 }
 
 int IB_AVLNode::GetSize() const
@@ -40,11 +53,33 @@ int IB_AVLNode::GetSize() const
 
 int IB_AVLNode::GetId() const
 {
-	cout << IB_id << endl;
-	return IB_id;
+	return IB_id_;
 }
 
+int IB_AVLNode::Last() const
+{
+	return last_id_;
+}
 
+int IB_AVLNode::Next() const
+{
+	return next_id_;
+}
+
+IB_AVLNode* IB_AVLNode::lchild()
+{
+	return p_lchild_;
+}
+
+IB_AVLNode* IB_AVLNode::rchild()
+{
+	return p_rchild_;
+}
+
+IB_AVLNode* IB_AVLNode::parent()
+{
+	return p_parent_;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -60,17 +95,29 @@ IB_AVLTree::~IB_AVLTree()
 	Clear();
 }
 
-void IB_AVLTree::Insert(IB_Disk ib)
+IB_AVLNode* IB_AVLTree::GetRoot()
 {
-	Insert(ib.block_id, ib.size);
+	return root_;
+}
+
+void IB_AVLTree::Insert(IB_Disk* ib)
+{
+	Insert(ib->block_id, ib->size, ib->last_id, ib->next_id);
+	id_tree.Insert(ib->block_id);
 }
 
 void IB_AVLTree::Insert(IB_AVLNode* ib)
 {
-	Insert(ib->IB_id, ib->size_);
+	Insert(ib->IB_id_, ib->size_, ib->last_id_, ib->next_id_);
+	id_tree.Insert(ib->IB_id_);
 }
 
-void IB_AVLTree::Insert(const int id, const int size)
+void IB_AVLTree::Insert(const int id)
+{
+	Insert(id, id, 0, 0);
+}
+
+void IB_AVLTree::Insert(const int id, const int size, const int last_id, const int next_id)
 {
 	IB_AVLNode *p_parent = 0;
 	IB_AVLNode *p_new_node = root_;
@@ -79,29 +126,29 @@ void IB_AVLTree::Insert(const int id, const int size)
 	while (p_new_node != NULL)
 	{
 		p_parent = p_new_node;
-		if (id == p_parent->IB_id)
+		if (id == p_parent->IB_id_)
 		{
 			cout << "IB_id duplicate. Please delete first." << endl;
 			return;
 		}
-		if (size < p_parent->size_ || size == p_parent->size_ && id < p_parent->IB_id)
+		if (size < p_parent->size_ || size == p_parent->size_ && id < p_parent->IB_id_)
 		{
 			p_new_node = p_parent->p_lchild_;
 		}
-		else if (size > p_parent->size_ || size == p_parent->size_ && id > p_parent->IB_id)
+		else if (size > p_parent->size_ || size == p_parent->size_ && id > p_parent->IB_id_)
 		{
 			p_new_node = p_parent->p_rchild_;
 		}
 	}
 
 	//此段程序插入结点;
-	p_new_node = new IB_AVLNode(id, size);
+	p_new_node = new IB_AVLNode(id, size, last_id, next_id);
 	if (root_ == NULL)
 	{
 		root_ = p_new_node;
 		return;
 	}
-	else if (size < p_parent->size_ || size == p_parent->size_ && id < p_parent->IB_id)  //新结点值小，插在左边;
+	else if (size < p_parent->size_ || size == p_parent->size_ && id < p_parent->IB_id_)  //新结点值小，插在左边;
 	{
 		p_parent->p_lchild_ = p_new_node;
 		p_new_node->p_parent_ = p_parent;
@@ -117,12 +164,19 @@ void IB_AVLTree::Insert(const int id, const int size)
 
 void IB_AVLTree::Delete(IB_AVLNode* ib)
 {
-	Delete(ib->IB_id, ib->size_);
+	Delete(ib->IB_id_, ib->size_);
+	id_tree.Delete(ib->IB_id_);
 }
 
-void IB_AVLTree::Delete(IB_Disk ib)
+void IB_AVLTree::Delete(IB_Disk* ib)
 {
-	Delete(ib.block_id, ib.size);
+	Delete(ib->block_id, ib->size);
+	id_tree.Delete(ib->block_id);
+}
+
+void IB_AVLTree::Delete(const int id)
+{
+	Delete(id, id);
 }
 
 void IB_AVLTree::Delete(const int id, const int size)
@@ -137,7 +191,7 @@ void IB_AVLTree::Delete(const int id, const int size)
 		if (p_best_replacement != 0) //存在替代结点;
 		{
 			p_delete_position->size_ = p_best_replacement->size_;
-			p_delete_position->IB_id = p_best_replacement->IB_id;
+			p_delete_position->IB_id_ = p_best_replacement->IB_id_;
 			p_parent = p_best_replacement->p_parent_;
 			if (p_parent->p_lchild_ == p_best_replacement)
 			{
@@ -176,9 +230,19 @@ void IB_AVLTree::Delete(const int id, const int size)
 
 }
 
-IB_AVLNode* IB_AVLTree::Search(IB_Disk ib)
+IB_Disk* IB_AVLTree::Search(IB_Disk* ib)
 {
-	IB_AVLNode *p_node = Search(ib.block_id, ib.size);
+	IB_AVLNode *p_node = Search(ib->block_id, ib->size);
+	ib->block_id = p_node->IB_id_;
+	ib->last_id = p_node->last_id_;
+	ib->next_id = p_node->next_id_;
+	ib->size = p_node->size_;
+	return ib;
+}
+
+IB_AVLNode* IB_AVLTree::Search(IB_AVLNode* ib)
+{
+	IB_AVLNode *p_node = Search(ib->IB_id_, ib->size_);
 	return p_node;
 }
 
@@ -188,18 +252,18 @@ IB_AVLNode* IB_AVLTree::Search(const int id, const int size)
 	IB_AVLNode *best_node = NULL;
 	while (p_node)
 	{
-		if (size == p_node->size_ && id == p_node->IB_id)
+		if (size == p_node->size_ && id == p_node->IB_id_)
 		{
 			return p_node;
 		}
 		if (size <= p_node->size_ && id == -1)
 		{
-			if (p_node->p_lchild_ && p_node->p_lchild_->size_ < size)
+			if (p_node->p_lchild_ == NULL || p_node->p_lchild_->size_ < size)
 			{
 				best_node = p_node;
 			}
 		}
-		if (size < p_node->size_ || size == p_node->size_ && id < p_node->IB_id)
+		if (size < p_node->size_ || size == p_node->size_ && id < p_node->IB_id_)
 		{
 			p_node = p_node->p_lchild_;
 		}
@@ -233,7 +297,7 @@ void IB_AVLTree::PrintDLR()
 		path.pop();
 		if (p_node != 0) //非空结点输出，且左右孩子进栈;
 		{
-			cout << "blk_id:" << p_node->IB_id << ", blk_size:" << p_node->size_ << endl;
+			cout << "blk_id:" << p_node->IB_id_ << ", blk_size:" << p_node->size_ << endl;
 			path.push(p_node->p_rchild_);
 			path.push(p_node->p_lchild_);
 		}
@@ -254,7 +318,7 @@ void IB_AVLTree::PrintLDR(IB_AVLNode* p_node)
 	}
 
 	PrintLDR(p_node->p_lchild_);
-	cout << "blk_id:" << p_node->IB_id << ", blk_size:" << p_node->size_ << endl;
+	cout << "blk_id:" << p_node->IB_id_ << ", blk_size:" << p_node->size_ << endl;
 	PrintLDR(p_node->p_rchild_);
 }
 
@@ -271,7 +335,7 @@ void IB_AVLTree::PrintRDL(IB_AVLNode* p_node)
 	}
 
 	PrintRDL(p_node->p_rchild_);
-	cout << "blk_id:" << p_node->IB_id << ", blk_size:" << p_node->size_ << endl;
+	cout << "blk_id:" << p_node->IB_id_ << ", blk_size:" << p_node->size_ << endl;
 	PrintRDL(p_node->p_lchild_);
 }
 

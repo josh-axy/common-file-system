@@ -4,6 +4,7 @@
 /*Judge users' order*/
 void judge(char *op1, char *op2, char *op3)
 {
+	
 	//Create Command
 	if (strcmp(op1, "create") == 0)
 	{
@@ -90,6 +91,24 @@ void judge(char *op1, char *op2, char *op3)
 			}
 		}
 			
+	}
+
+			ls(op2, op3);
+	}
+
+	else if (strcmp(op1, "show") == 0)
+	{
+		int cnt;
+		cnt = 20;
+		cout << "first:" << sys.freeib_id << " last:" << sys.last_freeib_id << endl;
+		for (int i = 1; i <= cnt;)
+		{
+			//装载空闲信息块头
+			fseek(fp, IB_POS(i), SEEK_SET);
+			fread(&free_ib_tmp, sizeof(IB_Disk), 1, fp);
+			cout << free_ib_tmp.block_id << ' ' << free_ib_tmp.size << ' ' << free_ib_tmp.last_id << ' ' << free_ib_tmp.next_id << endl;
+			i++;
+		}
 	}
 
 	//Enter Contents Command
@@ -182,7 +201,7 @@ void judge(char *op1, char *op2, char *op3)
 		else if (strlen(op3) != 0)
 			printf("Command syntax is incorrect!\n");
 		else
-			mkdir(op2, DIR_T);   
+			make(op2, DIR_T, NULL);   //1
 	}
 
 	//Create File Command
@@ -198,7 +217,7 @@ void judge(char *op1, char *op2, char *op3)
 		else if (strlen(op3) != 0)
 			printf("Command syntax is incorrect!\n");
 		else
-			mkdir(op2, FILE_T);   
+			make(op2, FILE_T, NULL);   //1
 	}
 
 	//Move Command
