@@ -90,10 +90,6 @@ void judge(char *op1, char *op2, char *op3)
 				ls(op2, op3);
 			}
 		}
-			
-	}
-
-			ls(op2, op3);
 	}
 
 	else if (strcmp(op1, "show") == 0)
