@@ -15,7 +15,7 @@ void cp(char path1[], char path2[])
 		printf("Path format incorrect. Please re-enter.\n");
 		return;
 	}
-	if (path1[2] != '\\')
+	if (path2[2] != '\\')
 	{
 		make(path2, FILE_T, path1);
 	}
