@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Fcore.h"
+#include "Fcommand.h"
 
 /***************************************获取时间函数*********************************/
 /************************************************************************************/
@@ -536,6 +537,14 @@ int drop_fcb(int fcb_id, int r_mode)
 /*更新FCB*/
 void write_fcb(int update_fcb_id)
 {
+	if (update_fcb_id < 0)
+	{
+		cout << "System fatal error! Please re-create system." << endl;
+		current_fcb_id = 0;
+		sys_mounted = 0;
+		strcpy(current_path, "");
+		return;
+	}
 	if (fp == NULL)
 	{
 		printf("Update FCB failed.\n");

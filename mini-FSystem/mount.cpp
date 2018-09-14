@@ -21,6 +21,11 @@ int mount(char arr[])
 	{
 		fread(&fcb_list[i], sizeof(FCB), 1, fp);
 	}
+	if (fcb_list[sys.rootfcb_id].file_type == EMPTY_T)
+	{
+		cout << "System fatal error! Please re-create." << endl;
+		return -1;
+	}
 	//装载空闲信息块头
 	fseek(fp, IB_POS(sys.freeib_id), SEEK_SET);
 	fread(&free_ib_tmp, sizeof(IB_Disk), 1, fp);

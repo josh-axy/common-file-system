@@ -111,7 +111,7 @@ void judge(char *op1, char *op2, char *op3)
 			//в╟тьFCBпео╒
 			cout << "name:  " << fcb_list[i].filename << "  type:  " << (int)fcb_list[i].file_type << "  block_id:  " << fcb_list[i].file_block_id << "  size:  " << fcb_list[i].file_size << endl;
 			cout << "filep: ";
-			for (int j = 0; fcb_list[i].filep[j] >= 0; j++)
+			for (int j = 0; j < 8; j++)
 			{
 				
 				cout << fcb_list[i].filep[j] << "  ";
