@@ -3,7 +3,23 @@
 
 void map()
 {
-
+	int flag = 1;
+	IB_Disk* ib_map;
+	int i = 1;//block search number
+	while (i != 258112)
+	{
+		ib_map = get_ib_info(i);
+		if (ib_map->last_id == -1)
+		{
+			printf("File number %d: begin from block %d; block length is  %d\n\n", flag, ib_map->block_id, ib_map->size);
+			flag++;
+			i = i + ib_map->size;
+		}
+		else if (ib_map->last_id == 0)
+		{
+			i = i + ib_map->size;
+		}
+	}
 	/*IB_Disk* ib_tmp;
 	IB_Disk* ib_map;
 	int flag = 1;
