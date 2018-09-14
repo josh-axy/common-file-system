@@ -33,10 +33,11 @@ void cp(char path1[], char path2[])
 			printf("Name illegal!\n");
 			return;
 		}
-		buf = new char[ib->size];
-		fseek(fp, IB_POS(ib->block_id), SEEK_SET);
-		fread(buf, ib->size, 1, fp);
-		fwrite(buf, sizeof(buf), 1, fp_tmp);
+		buf = new char[fcb_list[dir_fcb_id].file_size];
+		fseek(fp, IB_POS(ib->block_id) + sizeof(IB_Disk), SEEK_SET);
+		fread(buf, fcb_list[dir_fcb_id].file_size, 1, fp);
+		cout << buf << endl;
+		fwrite(buf, fcb_list[dir_fcb_id].file_size * sizeof(char), 1, fp_tmp);
 		fclose(fp_tmp);
 		delete ib;
 	}

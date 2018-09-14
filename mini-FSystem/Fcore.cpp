@@ -112,20 +112,25 @@ int path_to_fcb_id(char *path, int f_type)
 			}
 			if (strcmp(fcb_list[next_id].filename, name[i]) == 0)
 			{
-				if (f_type == DIR_T && fcb_list[next_id].file_type != DIR_T)
-				{
-					cout << "No such directory." << endl;
-					return -1;
-				}
-				if (f_type == FILE_T && fcb_list[next_id].file_type != FILE_T)
-				{
-					cout << "No such file." << endl;
-					return -1;
-				}
 				fcb_id = next_id;
-				break;
+				j = 2;
+				i++;
+				if (name[i][0]=='\0')
+				{
+					break;
+				}
 			}
 			next_id = fcb_list[fcb_id].filep[j];
+		}
+		if (f_type == DIR_T && fcb_list[next_id].file_type != DIR_T)
+		{
+			cout << "No such directory." << endl;
+			return -1;
+		}
+		if (f_type == FILE_T && fcb_list[next_id].file_type != FILE_T)
+		{
+			cout << "No such file." << endl;
+			return -1;
 		}
 		if (next_id == -1)
 		{
@@ -217,7 +222,7 @@ int new_fcb(int dir_fcb_id, int fcb_type, char *name, char *src_f_path)
 					cout << "File doesn't exist." << endl;
 					return -4;
 				}
-				fseek(fp_tmp, IB_POS(fcb_list[f_fcb_id].file_block_id), SEEK_SET);
+				fseek(fp_tmp, IB_POS(fcb_list[f_fcb_id].file_block_id) + sizeof(IB_Disk), SEEK_SET);
 			}
 		}
 		else
@@ -299,6 +304,7 @@ int move_fcb(int dir_fcb_id, int fcb_id, char *name, char* file_path)
 	if (name[0] == '\0')
 	{
 		cout << "Empty name. Please re-enter" << endl;
+		return -1;
 	}
 	/*查重名并寻找新filep位置*/
 	for (child = 2; fcb_list[tmp_fcb_id].filep[child] != -1; child++)
@@ -317,6 +323,16 @@ int move_fcb(int dir_fcb_id, int fcb_id, char *name, char* file_path)
 		{
 			same_origin = 1;
 		}
+	}
+	/*查同源*/ 
+	for (int father_id = dir_fcb_id; father_id != -1;)
+	{
+		if (fcb_id == father_id)
+		{
+			cout << "Same origin. Please re-enter" << endl;
+			return -1;
+		}
+		father_id = fcb_list[father_id].filep[0];
 	}
 	if (child == EXT_CB)
 	{

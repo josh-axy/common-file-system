@@ -51,15 +51,6 @@ void move(char *src, char *dst)
 	case -1:
 		return;
 	default:
-		for (int tmp_fcb_id = dst_fcb_id; tmp_fcb_id!=-1;)
-		{
-			tmp_fcb_id = fcb_list[tmp_fcb_id].filep[0];
-			if (tmp_fcb_id == src_fcb_id)
-			{
-				cout << "Cannot do that operate!" << endl;
-				return;
-			}
-		}
 		move_fcb(dst_fcb_id, src_fcb_id, name, NULL);
 		break;
 	}
