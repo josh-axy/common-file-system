@@ -86,14 +86,7 @@ void judge(char *op1, char *op2, char *op3)
 	else if (strcmp(op1, "show") == 0)
 	{
 		int cnt;
-		if (op2)
-		{
-			cnt = (int)(op2 - '0');
-		}
-		else
-		{
-			cnt = 10;
-		}
+		cnt = 20;
 		cout << "first:" << sys.freeib_id << " last:" << sys.last_freeib_id << endl;
 		for (int i = 1; i <= cnt;)
 		{

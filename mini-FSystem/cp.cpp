@@ -15,15 +15,13 @@ void cp(char path1[], char path2[])
 		printf("Path format incorrect. Please re-enter.\n");
 		return;
 	}
-	/*
-	if (!((path1[len1] == '.' || path1[len1 - 3] == '.' || path1[len1 - 4] == '.') && (path2[len2 - 2] == '.' || path2[len2 - 3] == '.' || path2[len2 - 4] == '.')))
+	if (path1[2] != '\\')
 	{
-		printf("输入指令格式有错，请核对后重新输入！\n");
-		return;
-	}*/
-	if (path1[1] == ':'&&path1[2] == '\\')
+		make(path2, FILE_T, path1);
+	}
+	else
 	{
-		make(path1, FILE_T, path2);
+
 	}
 	return;
 }

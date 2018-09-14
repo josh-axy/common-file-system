@@ -637,6 +637,7 @@ IB_Disk* write_ib(int f_size, FILE* fp_tmp)
 	/*当前空闲IB段用光*/
 	else
 	{
+		free_ib_tree.Delete(p_old_ib);
 		if (p_old_ib->last_id != 0)
 		{
 			p_new_ib = get_ib_info(p_old_ib->last_id);
@@ -671,6 +672,14 @@ IB_Disk* write_ib(int f_size, FILE* fp_tmp)
 	delete buffer;
 	delete p_old_ib;
 	delete p_new_ib;
+	cout << "first:" << sys.freeib_id << " last:" << sys.last_freeib_id << endl;
+	for (int i = 1; i <= 20; i++)
+	{
+		//装载空闲信息块头
+		fseek(fp, IB_POS(i), SEEK_SET);
+		fread(&free_ib_tmp, sizeof(IB_Disk), 1, fp);
+		cout << free_ib_tmp.block_id << ' ' << free_ib_tmp.size << ' ' << free_ib_tmp.last_id << ' ' << free_ib_tmp.next_id << endl;
+	}
 	return ib_tmp;
 }
 
