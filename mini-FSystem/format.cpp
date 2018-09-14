@@ -35,15 +35,6 @@ int format() {
 
 	//空文件头初始化
 	IB_Disk ib;
-	for (int i = 0; i < IB_NUM - 1; i++)
-	{
-		fseek(fp, IB_POS(i), SEEK_SET);
-		ib.block_id = 0;
-		ib.size = 0;
-		ib.last_id = 0;
-		ib.next_id = 0;
-		fwrite(&ib, sizeof(FCB), 1, fp);
-	}
 	fseek(fp, IB_Location * BLOCK_SIZE, SEEK_SET);
 	ib.block_id = 1;
 	ib.size = IB_NUM;

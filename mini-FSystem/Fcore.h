@@ -20,7 +20,7 @@ void erase_ib(int ib_id, int size);
 IB_Disk* get_free_ib(int ib_size);
 IB_Disk* get_ib_info(int ib_id); //获取IB信息
 void link_ib(IB_Disk* ib);
-int get_ib_content(int ib_id);
+int get_ib_content(int fcb_id);
 void write_sys();
 /*内核函数定义*/
 #endif // !F_CORE_H

@@ -155,12 +155,27 @@ int new_fcb(int dir_fcb_id, int fcb_type, char *name, char *src_f_path)
 	int tmp_fcb_id = dir_fcb_id;
 	int f_fcb_id;
 	int f_len;
+	char ch;
 	IB_Disk* file_info = NULL;
-	FILE* fp_tmp;
+	FILE* fp_tmp = NULL;
 	if (fp == NULL)
 	{
 		cout << "New fcb failed." << endl;
 		return -2;
+	}
+	/*查重名*/
+	for (child = 2; fcb_list[tmp_fcb_id].filep[child] != -1; child++)
+	{
+		if (child == EXT_CB)
+		{
+			tmp_fcb_id = fcb_list[tmp_fcb_id].filep[EXT_CB];
+			child = 1;
+		}
+		if (strcmp(name, fcb_list[fcb_list[tmp_fcb_id].filep[child]].filename) == 0)
+		{
+			cout << "Name duplicated. Please re-enter." << endl;
+			return -1;
+		}
 	}
 	//分配IB
 	if (fcb_type == FILE_T)
@@ -175,7 +190,7 @@ int new_fcb(int dir_fcb_id, int fcb_type, char *name, char *src_f_path)
 					cout << "Path format error." << endl;
 					return -4;
 				}
-				if ((fp_tmp = fopen(src_f_path, "rb+")) == NULL)
+				if ((fp_tmp = fopen(src_f_path, "r")) == NULL)
 				{
 					cout << "File doesn't exist." << endl;
 					return -4;
@@ -214,20 +229,6 @@ int new_fcb(int dir_fcb_id, int fcb_type, char *name, char *src_f_path)
 		if (file_info == NULL)
 		{
 			return -3;
-		}
-	}
-	/*查重名*/
-	for (child = 2; fcb_list[tmp_fcb_id].filep[child] != -1; child++)
-	{
-		if (child == EXT_CB)
-		{
-			tmp_fcb_id = fcb_list[tmp_fcb_id].filep[EXT_CB];
-			child = 1;
-		}
-		if (strcmp(name, fcb_list[fcb_list[tmp_fcb_id].filep[child]].filename) == 0)
-		{
-			cout << "Name duplicated. Please re-enter." << endl;
-			return -1;
 		}
 	}
 	/*分配空白FCB*/
@@ -430,7 +431,7 @@ int drop_fcb(int fcb_id, int r_mode)
 		if (r_mode == TRUE)
 		{
 			next_fcb_id = fcb_id;
-			for (int i = 2; fcb_list[next_fcb_id].filep[i] != -1; i++)
+			for (int i = (fcb_list[next_fcb_id].file_type == EXT_CB) ? 1 : 2; fcb_list[next_fcb_id].filep[i] != -1; i++)
 			{
 				if (i == EXT_CB)
 				{
@@ -561,8 +562,17 @@ IB_Disk* get_ib_info(int ib_id)
 }
 
 /*获取IB内容*/
-int get_ib_content(int ib_id)
+int get_ib_content(int fcb_id)
 {
+	IB_Disk* ib;
+	if (fp == NULL)
+	{
+		printf("Read IB failed.\n");
+		return 0;
+	}
+	ib->block_id = fcb_list[fcb_id].file_block_id;
+	ib = get_ib_info(ib->block_id);
+
 	return 0;
 }
 
@@ -578,7 +588,7 @@ IB_Disk* write_ib(int f_size, FILE* fp_tmp)
 	IB_Disk* p_new_ib = new IB_Disk;
 	IB_Disk* ib_tmp = new IB_Disk;
 	IB_AVLNode* ib_avl_tmp;
-
+	buffer = new char[f_size];
 	if (fp == NULL)
 	{
 		printf("Write IB failed.\n");
@@ -615,14 +625,13 @@ IB_Disk* write_ib(int f_size, FILE* fp_tmp)
 	fwrite(ib_tmp, sizeof(IB_Disk), 1, fp);
 	if (fp_tmp == NULL)
 	{
-		buffer = new char[f_size];
 		memset(buffer, 0, f_size * sizeof(char));
 		fwrite(buffer, f_size, 1, fp);
-		delete buffer;
 	}
 	else
 	{
-		fwrite(fp_tmp, f_size, 1, fp);
+		fread(buffer, f_size, 1, fp_tmp);
+		fwrite(buffer, f_size, 1, fp);
 	}
 	fflush(fp);
 	/*更新IB块*/
@@ -672,6 +681,7 @@ IB_Disk* write_ib(int f_size, FILE* fp_tmp)
 	}
 	delete p_old_ib;
 	delete p_new_ib;
+	/*
 	cout << "first:" << sys.freeib_id << " last:" << sys.last_freeib_id << endl;
 	for (int i = 1; i <= 20; i++)
 	{
@@ -679,7 +689,8 @@ IB_Disk* write_ib(int f_size, FILE* fp_tmp)
 		fseek(fp, IB_POS(i), SEEK_SET);
 		fread(&free_ib_tmp, sizeof(IB_Disk), 1, fp);
 		cout << free_ib_tmp.block_id << ' ' << free_ib_tmp.size << ' ' << free_ib_tmp.last_id << ' ' << free_ib_tmp.next_id << endl;
-	}
+	}*/
+	delete buffer;
 	return ib_tmp;
 }
 
