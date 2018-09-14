@@ -6,8 +6,10 @@ void ls(char* path, char* mode)
 {
 	//ls -l
 	int tmp_fcb_id = path_to_fcb_id(path, DIR_T);
+	int l_mode = 0;
 	if (mode[0] == '-' && mode[1] == 'l')
 	{
+		l_mode = 1;
 		if (tmp_fcb_id == -1)
 		{
 			return;
@@ -22,15 +24,15 @@ void ls(char* path, char* mode)
 				i = 1;
 			}
 			child_id = fcb_list[tmp_fcb_id].filep[i];
-			if (fcb_list[child_id].file_type == DIR_T)
-			{
-				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_GREEN | FOREGROUND_BLUE);
-			}
 			printf("%-15s\t%-15d\t", fcb_list[child_id].filename, fcb_list[child_id].file_size);
 			print_time(fcb_list[child_id].create_time);
 			printf("  ");
 			print_time(fcb_list[child_id].edit_time);
 			printf("  ");
+			if (fcb_list[child_id].file_type == DIR_T)
+			{
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_GREEN | FOREGROUND_BLUE);
+			}
 			switch (fcb_list[child_id].file_type)
 			{
 			case 0:

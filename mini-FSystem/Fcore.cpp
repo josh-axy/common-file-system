@@ -431,7 +431,7 @@ int drop_fcb(int fcb_id, int r_mode)
 		if (r_mode == TRUE)
 		{
 			next_fcb_id = fcb_id;
-			for (int i = (fcb_list[next_fcb_id].file_type == EXT_CB) ? 1 : 2; fcb_list[next_fcb_id].filep[i] != -1; i++)
+			for (int i = (fcb_list[next_fcb_id].file_type == EXT_T) ? 1 : 2; fcb_list[next_fcb_id].filep[i] != -1;)
 			{
 				if (i == EXT_CB)
 				{
@@ -454,6 +454,7 @@ int drop_fcb(int fcb_id, int r_mode)
 	fcb_list[fcb_id].file_type = EMPTY_T;
 	fcb_list[fcb_id].filep[0] = -1;
 	fcb_list[sys.last_freefcb_id].filep[0] = fcb_id;
+	cout << fcb_list[fcb_id].filename << endl;
 	/*Ð´´ÅÅÌ*/
 	write_fcb(sys.last_freefcb_id);
 	write_fcb(fcb_id);
@@ -465,7 +466,7 @@ int drop_fcb(int fcb_id, int r_mode)
 		origin_fcb_id = fcb_list[origin_fcb_id].filep[0];
 	}
 	/*É¾³ýÔ­Á´½Ó*/
-	for (origin_child = 2; fcb_list[origin_fcb_id].filep[origin_child] != -1; origin_child++)
+	for (origin_child = (fcb_list[origin_child].file_type == EXT_T) ? 1 : 2; fcb_list[origin_fcb_id].filep[origin_child] != -1; origin_child++)
 	{
 		if (origin_child == EXT_CB)
 		{
