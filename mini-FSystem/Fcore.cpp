@@ -181,7 +181,7 @@ int new_fcb(int dir_fcb_id, int fcb_type, char *name, char *src_f_path)
 					return -4;
 				}
 				fseek(fp_tmp, 0, SEEK_END);
-				f_len = ftell(fp);
+				f_len = ftell(fp_tmp);
 				fseek(fp_tmp, 0, SEEK_SET);
 			}
 			else
@@ -618,6 +618,7 @@ IB_Disk* write_ib(int f_size, FILE* fp_tmp)
 		buffer = new char[f_size];
 		memset(buffer, 0, f_size * sizeof(char));
 		fwrite(buffer, f_size, 1, fp);
+		delete buffer;
 	}
 	else
 	{
@@ -669,7 +670,6 @@ IB_Disk* write_ib(int f_size, FILE* fp_tmp)
 			write_sys();
 		}
 	}
-	delete buffer;
 	delete p_old_ib;
 	delete p_new_ib;
 	cout << "first:" << sys.freeib_id << " last:" << sys.last_freeib_id << endl;
