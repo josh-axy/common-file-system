@@ -10,7 +10,6 @@ void cp(char path1[], char path2[])
 	FILE* fp_tmp;
 	IB_Disk* ib;
 	char *buf;
-	int f_len;
 	if (path2[2] != '\\')
 	{
 		make(path2, FILE_T, path1);

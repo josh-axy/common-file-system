@@ -8,6 +8,7 @@ int input(char* op1, char* op2, char* op3)
 	int flag[100];
 	int i = 0, j = 0;
 	int overflow = 0;
+	int len;
 	memset(flag, 0, sizeof(flag));
 	for (i = 0;; i++)
 	{
@@ -50,7 +51,6 @@ int input(char* op1, char* op2, char* op3)
 	for (i = flag[4]; i < flag[5]; i++)
 		op3[i - flag[4]] = op[i];
 	op3[i - flag[4]] = '\0';
-	int len;
 	len = strlen(op);
 	if ((flag[5] != 0) && flag[5] < len)
 	{

@@ -96,27 +96,37 @@ void judge(char *op1, char *op2, char *op3)
 	{
 		int cnt;
 		cnt = 20;
-		cout << "first:" << sys.freeib_id << " last:" << sys.last_freeib_id << endl;
-		for (int i = 1; i <= cnt;)
+		cout << endl << "first free ib:" << sys.freeib_id << " last free ib:" << sys.last_freeib_id << endl;
+		for (int i = 1; i <= IB_NUM;)
 		{
-			//装载空闲信息块头
+			//装载空闲信息块
 			fseek(fp, IB_POS(i), SEEK_SET);
 			fread(&free_ib_tmp, sizeof(IB_Disk), 1, fp);
-			cout << free_ib_tmp.block_id << ' ' << free_ib_tmp.size << ' ' << free_ib_tmp.last_id << ' ' << free_ib_tmp.next_id << endl;
-			i++;
+			if (free_ib_tmp.size > 0 && free_ib_tmp.last_id < IB_NUM)
+			{
+				cout << free_ib_tmp.block_id << ' ' << free_ib_tmp.size << ' ' << free_ib_tmp.last_id << ' ' << free_ib_tmp.next_id << endl;
+				i += free_ib_tmp.size;
+			}
+			else
+			{
+				i++;
+			}
 		}
-		cout << "fcb first: " << sys.freefcb_id << "  last: " << sys.last_freefcb_id << endl;
-		for (int i = 0; i < cnt; i++)
+		cout << endl << "first free fcb: " << sys.freefcb_id << "  last free fcb: " << sys.last_freefcb_id << endl << endl;
+		for (int i = 0; i < FCB_NUM; i++)
 		{
 			//装载FCB信息
-			cout << "name:  " << fcb_list[i].filename << "  type:  " << (int)fcb_list[i].file_type << "  block_id:  " << fcb_list[i].file_block_id << "  size:  " << fcb_list[i].file_size << endl;
-			cout << "filep: ";
-			for (int j = 0; j < 8; j++)
+			if (fcb_list[i].filep[1] != -1)
 			{
-				
-				cout << fcb_list[i].filep[j] << "  ";
+				cout << "id:" << i << "  name:" << fcb_list[i].filename << "  type:" << (int)fcb_list[i].file_type << "  block_id:" << fcb_list[i].file_block_id << "  size:" << fcb_list[i].file_size << endl;
+				cout << "filep:";
+				for (int j = 0; j < 8; j++)
+				{
+
+					cout << fcb_list[i].filep[j] << "  ";
+				}
+				cout << endl << endl;
 			}
-			cout << endl;
 		}
 	}
 

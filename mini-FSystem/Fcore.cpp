@@ -39,7 +39,8 @@ int path_to_fcb_id(char *path, int f_type)
 	char input_tmp[13] = { 0 };
 	char name[100][13] = { 0 };
 	char str[100];
-	int len, abs = 0;
+	int len;
+	int abs = 0;
 	int fcb_id = 0, next_id;
 	int i = 0, j = 0, k = 0;
 	strcpy(str, path);
@@ -161,7 +162,6 @@ int new_fcb(int dir_fcb_id, int fcb_type, char *name, char *src_f_path)
 	int tmp_fcb_id = dir_fcb_id;
 	int f_fcb_id;
 	int f_len;
-	char ch;
 	IB_Disk* file_info = NULL;
 	FILE* fp_tmp = NULL;
 	if (fp == NULL)
@@ -432,11 +432,11 @@ int move_fcb(int dir_fcb_id, int fcb_id, char *name, char* file_path)
 /*释放fcb项*/
 int drop_fcb(int fcb_id, int r_mode)
 {
-	int child;
 	int origin_fcb_id = fcb_list[fcb_id].filep[0];
 	int origin_child;
 	int drop;
 	int next_fcb_id;
+
 	if (fp == NULL)
 	{
 		cout << "Drop FCB failed." << endl;
@@ -596,8 +596,7 @@ int get_ib_content(int fcb_id)
 		printf("Read IB failed.\n");
 		return 0;
 	}
-	ib->block_id = fcb_list[fcb_id].file_block_id;
-	ib = get_ib_info(ib->block_id);
+	ib = get_ib_info(fcb_list[fcb_id].file_block_id);
 
 	return 0;
 }
@@ -609,7 +608,7 @@ IB_Disk* write_ib(int f_size, FILE* fp_tmp)
 	char *buffer;
 	int blk_size;
 	int rest_size;
-	int i;
+
 	IB_Disk* p_old_ib;
 	IB_Disk* p_new_ib = new IB_Disk;
 	IB_Disk* ib_tmp = new IB_Disk;
@@ -656,6 +655,7 @@ IB_Disk* write_ib(int f_size, FILE* fp_tmp)
 	}
 	else
 	{
+		memset(buffer, 0, f_size * sizeof(char));
 		fread(buffer, f_size, 1, fp_tmp);
 		fwrite(buffer, f_size, 1, fp);
 	}
@@ -707,15 +707,6 @@ IB_Disk* write_ib(int f_size, FILE* fp_tmp)
 	}
 	delete p_old_ib;
 	delete p_new_ib;
-	/*
-	cout << "first:" << sys.freeib_id << " last:" << sys.last_freeib_id << endl;
-	for (int i = 1; i <= 20; i++)
-	{
-		//装载空闲信息块头
-		fseek(fp, IB_POS(i), SEEK_SET);
-		fread(&free_ib_tmp, sizeof(IB_Disk), 1, fp);
-		cout << free_ib_tmp.block_id << ' ' << free_ib_tmp.size << ' ' << free_ib_tmp.last_id << ' ' << free_ib_tmp.next_id << endl;
-	}*/
 	delete buffer;
 	return ib_tmp;
 }
@@ -820,7 +811,6 @@ void link_ib(IB_Disk* new_ib)
 	IB_AVLNode* op_ib;
 	IB_Disk* free_ib_disk;
 	IB_AVLNode* free_ib = new IB_AVLNode;
-	IB_AVLNode* ib_avl_tmp;
 	queue<IB_AVLNode*> path;
 	IB_AVLNode* id_left = NULL;
 	IB_AVLNode* id_right = NULL;

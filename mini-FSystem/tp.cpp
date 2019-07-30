@@ -3,7 +3,6 @@
 
 void readtxt(char* path)
 {
-	FILE* fp_tmp;
 	int fcb_id = path_to_fcb_id(path, FILE_T);
 	switch (fcb_id)
 	{

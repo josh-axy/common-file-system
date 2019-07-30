@@ -19,6 +19,7 @@ void map()
 		{
 			i = i + ib_map->size;
 		}
+		delete ib_map;
 	}
 	return;
 	/*IB_Disk* ib_tmp;

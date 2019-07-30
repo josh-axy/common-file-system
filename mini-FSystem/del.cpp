@@ -5,7 +5,6 @@ void del(char* path, char* mode)
 {
 	char name[13] = { 0 };
 	int drop_fcb_id;
-	int i;
 	int r_mode = 0;
 	if (path[0] == '\0')
 	{
